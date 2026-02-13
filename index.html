@@ -21,6 +21,7 @@
             overscroll-behavior-y: none;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden; /* Prevent side scroll */
         }
 
         header { 
@@ -39,14 +40,62 @@
         .card { background: white; padding: 15px; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 15px; border: 1px solid #f0f0f0; }
         .hidden { display: none !important; }
 
-        /* Game Iframe */
+        /* --- GAME FIX: ROTATION LOGIC --- */
+        #gameView {
+            position: relative;
+            height: calc(100vh - 150px);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .game-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: 0.3s;
+            background: black;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
         .game-frame {
             width: 100%;
-            height: calc(100vh - 160px); 
+            height: 100%;
             border: none;
-            border-radius: 15px;
-            background: #000;
         }
+
+        /* Class to trigger Landscape Mode */
+        .landscape-mode {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            width: 100vh !important; /* Height becomes Width */
+            height: 100vw !important; /* Width becomes Height */
+            z-index: 5000;
+            transform: rotate(90deg);
+            transform-origin: top left;
+            margin-left: 100vw; /* Push it back into view */
+            border-radius: 0 !important;
+        }
+
+        /* Rotate Button */
+        #rotateBtn {
+            background: #222;
+            color: white;
+            border: 1px solid #444;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        /* -------------------------------- */
 
         /* Post Styling */
         .verified-badge { color: var(--blue-badge); font-size: 14px; margin-left: 4px; vertical-align: middle; }
@@ -100,10 +149,15 @@
     </div>
 
     <div id="gameView" class="tab-view hidden">
-        <div class="card" style="padding:0; overflow:hidden; background:black;">
+        <button id="rotateBtn" onclick="toggleGameRotation()">🔄 Rotate Screen (Fullscreen)</button>
+        
+        <div id="gameContainer" class="game-wrapper">
             <iframe src="https://arnoldtasipit66-wq.github.io/my-game-assets/" class="game-frame" title="Pinoy Pool"></iframe>
         </div>
-        <p style="text-align:center; color:#888; font-size:12px;">Pinoy Pool - Mobuzzz Edition 🎱</p>
+        
+        <p style="text-align:center; color:#888; font-size:12px; margin-top:10px;">
+            Click <b>Rotate</b> and turn your phone sideways! 🎱
+        </p>
     </div>
 
     <div id="notifView" class="tab-view hidden">
@@ -178,6 +232,28 @@
   const getBadge = (user) => verifiedList.includes(user) ? '<span class="verified-badge">✔</span>' : '';
 
   window.login = () => signInWithPopup(auth, provider);
+  
+  // --- ROTATION LOGIC FOR GAME ---
+  window.toggleGameRotation = () => {
+    const game = document.getElementById('gameContainer');
+    game.classList.toggle('landscape-mode');
+    
+    // Hide nav bar when in full landscape to prevent accidental clicks
+    if (game.classList.contains('landscape-mode')) {
+        document.getElementById('bottomNav').style.display = 'none';
+        document.querySelector('header').style.display = 'none';
+        document.getElementById('rotateBtn').innerText = "❌ Close Game";
+        document.getElementById('rotateBtn').style.position = 'fixed';
+        document.getElementById('rotateBtn').style.bottom = '10px';
+        document.getElementById('rotateBtn').style.right = '10px';
+        document.getElementById('rotateBtn').style.zIndex = '6000';
+    } else {
+        document.getElementById('bottomNav').style.display = 'flex';
+        document.querySelector('header').style.display = 'block';
+        document.getElementById('rotateBtn').innerText = "🔄 Rotate Screen (Fullscreen)";
+        document.getElementById('rotateBtn').style.position = 'static';
+    }
+  };
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -206,14 +282,33 @@
     listenNotifs();
   }
 
-  // --- REVISED NOTIF LOGIC (Direct UID Targeting) ---
+  // --- ACTIONS ---
+  window.deletePost = async (id) => {
+    if (confirm("Delete this buzz?")) await deleteDoc(doc(db, "posts", id));
+  };
+
+  window.like = async (id, targetUid) => {
+    const lRef = doc(db, "posts", id, "likes", currentUser.uid);
+    const snap = await getDoc(lRef);
+    if (snap.exists()) {
+        await deleteDoc(lRef);
+    } else {
+        await setDoc(lRef, { u: currentUsername });
+        pushNotif(targetUid, "liked your buzz! ❤️");
+    }
+  };
+
+  window.addComment = async (id, targetUid) => {
+    const val = document.getElementById(`c-in-${id}`).value;
+    if (!val.trim()) return;
+    await addDoc(collection(db, "posts", id, "comments"), { text: val, user: currentUsername, timestamp: serverTimestamp() });
+    document.getElementById(`c-in-${id}`).value = "";
+    pushNotif(targetUid, "commented on your buzz 💬");
+  };
+
   async function pushNotif(targetUid, msg) {
     if(targetUid === currentUser.uid) return; 
-    await addDoc(collection(db, targetUid, "notifs"), { 
-        from: currentUsername, 
-        msg: msg, 
-        time: serverTimestamp() 
-    });
+    await addDoc(collection(db, targetUid, "notifs"), { from: currentUsername, msg: msg, time: serverTimestamp() });
   }
 
   function listenNotifs() {
@@ -229,33 +324,6 @@
     });
   }
 
-  // --- ACTIONS ---
-  window.deletePost = async (id) => {
-    if (confirm("Delete this buzz?")) await deleteDoc(doc(db, "posts", id));
-  };
-
-  // UPDATED LIKE: Passes target UID directly for sure-fire notification
-  window.like = async (id, targetUid) => {
-    const lRef = doc(db, "posts", id, "likes", currentUser.uid);
-    const snap = await getDoc(lRef);
-    if (snap.exists()) {
-        await deleteDoc(lRef);
-    } else {
-        await setDoc(lRef, { u: currentUsername });
-        pushNotif(targetUid, "liked your buzz! ❤️");
-    }
-  };
-
-  // UPDATED COMMENT: Passes target UID directly
-  window.addComment = async (id, targetUid) => {
-    const val = document.getElementById(`c-in-${id}`).value;
-    if (!val.trim()) return;
-    await addDoc(collection(db, "posts", id, "comments"), { text: val, user: currentUsername, timestamp: serverTimestamp() });
-    document.getElementById(`c-in-${id}`).value = "";
-    pushNotif(targetUid, "commented on your buzz 💬");
-  };
-
-  // --- FEED ---
   function loadFeed() {
     const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
     onSnapshot(q, s => {
@@ -265,7 +333,6 @@
         const d = postDoc.data();
         const id = postDoc.id;
         const deleteBtn = (currentUser && d.uid === currentUser.uid) ? `<button class="btn-delete" onclick="deletePost('${id}')">🗑️</button>` : '';
-
         const div = document.createElement('div');
         div.className = 'post';
         div.innerHTML = `
@@ -307,7 +374,6 @@
     });
   }
 
-  // --- PROFILE & CHAT ---
   window.viewProfile = async (un) => {
     switchView('profile');
     const uSnap = await getDocs(query(collection(db, "users"), where("username", "==", un)));
@@ -316,14 +382,9 @@
         document.getElementById('p-pic').src = d.data().photo;
         const isMe = un === currentUsername;
         document.getElementById('profileActions').style.display = isMe ? 'none' : 'flex';
-        
-        document.getElementById('followBtn').onclick = () => { 
-            pushNotif(d.id, "started following you! 🚀"); 
-            alert("Following!"); 
-        };
+        document.getElementById('followBtn').onclick = () => { pushNotif(d.id, "started following you! 🚀"); alert("Following!"); };
         document.getElementById('dmBtn').onclick = () => startChat(d.id, un);
     });
-    // Load User Posts
     const pSnap = await getDocs(query(collection(db, "posts"), where("user", "==", un), orderBy("timestamp", "desc")));
     const uFeed = document.getElementById('userFeed'); uFeed.innerHTML = "";
     pSnap.forEach(doc => { uFeed.innerHTML += `<div class="post"><div class="post-content">${doc.data().content}</div></div>`; });
@@ -335,10 +396,8 @@
     document.getElementById('chatRoomArea').classList.remove('hidden');
     document.getElementById('chatTitle').innerText = "@" + targetName;
     activeChatId = [currentUser.uid, targetUid].sort().join("_");
-    
     onSnapshot(query(collection(db, "chats", activeChatId, "messages"), orderBy("time", "asc")), s => {
-        const box = document.getElementById('chatMessages'); 
-        box.innerHTML = "";
+        const box = document.getElementById('chatMessages'); box.innerHTML = "";
         s.forEach(m => {
             const isMe = m.data().sender === currentUser.uid;
             box.innerHTML += `<div class="bubble ${isMe ? 'bubble-me' : 'bubble-them'}">${m.data().text}</div>`;
@@ -354,16 +413,23 @@
     input.value = "";
   };
 
-  // --- NAV ---
   window.switchView = (v) => {
     document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
     document.getElementById(v + 'View').classList.remove('hidden');
     document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
     document.getElementById('nav' + v.charAt(0).toUpperCase() + v.slice(1)).classList.add('active');
     if (v === 'notif') document.getElementById('notifDot').style.display = 'none';
+    
+    // Reset rotation if leaving game tab
+    if (v !== 'game') {
+         document.getElementById('gameContainer').classList.remove('landscape-mode');
+         document.getElementById('bottomNav').style.display = 'flex';
+         document.querySelector('header').style.display = 'block';
+         document.getElementById('rotateBtn').innerText = "🔄 Rotate Screen (Fullscreen)";
+         document.getElementById('rotateBtn').style.position = 'static';
+    }
   }
 
-  // --- POST ---
   document.getElementById('postBtn').onclick = async () => {
     const text = document.getElementById('postInput').value;
     const file = document.getElementById('postImageUpload').files[0];
