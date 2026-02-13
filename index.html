@@ -3,35 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobuzzz - Empire</title>
+    <title>Mobuzzz - Empire State</title>
     <style>
-        :root { --main-yellow: #FFD700; --bg: #FFFDF0; --gray: #888; --danger: #ff4757; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 70px; color: #333; }
+        :root { --main-yellow: #FFD700; --bg: #FFFDF0; --gray: #888; --blue-badge: #1DA1F2; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; color: #333; }
         
-        header { background: var(--main-yellow); padding: 15px; text-align: center; font-size: 22px; font-weight: bold; position: sticky; top: 0; z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        header { background: var(--main-yellow); padding: 15px; text-align: center; font-size: 24px; font-weight: bold; position: sticky; top: 0; z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
         .container { padding: 12px; max-width: 500px; margin: 0 auto; }
-        .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #eee; }
         .hidden { display: none; }
 
+        /* Verified Badge */
+        .verified-badge { color: var(--blue-badge); font-size: 14px; margin-left: 4px; vertical-align: middle; }
+
         /* Post & Profile Styling */
-        .post { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; }
+        .post { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .profile-pic { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--main-yellow); cursor: pointer; }
-        .btn-yellow { background: var(--main-yellow); border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; }
-        
-        /* Messenger & Notifs */
-        .notif-item, .chat-item { padding: 10px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; }
-        .chat-msg { margin: 5px 0; padding: 8px 12px; border-radius: 15px; max-width: 80%; }
-        .msg-me { background: var(--main-yellow); align-self: flex-end; margin-left: auto; }
-        .msg-them { background: #eee; }
+        .post-img { width: 100%; border-radius: 10px; margin-top: 10px; display: block; }
 
-        /* Bottom Nav (Icon-style) */
-        nav { display: flex; justify-content: space-around; background: white; padding: 10px 0; border-top: 1px solid #ddd; position: fixed; bottom: 0; width: 100%; z-index: 2000; }
-        nav button { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--gray); position: relative; }
-        nav button.active { color: #000; }
-        .badge { position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; }
+        /* Messenger & Notifications UI */
+        .notif-item { padding: 12px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+        .chat-room { height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px; background: #fafafa; border-radius: 10px; margin-bottom: 10px; }
+        .bubble { padding: 8px 12px; border-radius: 15px; max-width: 75%; font-size: 14px; }
+        .bubble-me { background: var(--main-yellow); align-self: flex-end; }
+        .bubble-them { background: #eee; align-self: flex-start; }
 
-        input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 10px; margin-bottom: 10px; box-sizing: border-box; }
+        /* Navigation Icons */
+        nav { display: flex; justify-content: space-around; background: white; padding: 12px 0; border-top: 2px solid var(--main-yellow); position: fixed; bottom: 0; width: 100%; z-index: 2000; }
+        nav button { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--gray); position: relative; transition: 0.2s; }
+        nav button.active { color: #000; transform: scale(1.2); }
+        .badge-dot { position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; background: red; border-radius: 50%; display: none; }
+
+        .btn-yellow { background: var(--main-yellow); border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -40,66 +45,62 @@
 
 <div class="container">
     <div id="authSection" class="card">
-        <button class="btn-yellow" onclick="login()" style="width:100%">Enter the Hive</button>
+        <button class="btn-yellow" onclick="login()" style="width:100%">Enter the Empire</button>
     </div>
 
-    <div id="homeTab" class="tab-content">
+    <div id="homeView" class="tab-view">
         <div id="postArea" class="card hidden">
-            <textarea id="postInput" placeholder="What's the buzz?"></textarea>
+            <textarea id="postInput" placeholder="Anong buzz natin?" style="width:100%; border:none; outline:none; resize:none; font-size:16px; min-height:50px;"></textarea>
             <button class="btn-yellow" id="postBtn" style="float:right">Buzz It!</button>
             <div style="clear:both"></div>
         </div>
         <div id="feed"></div>
     </div>
 
-    <div id="messengerTab" class="tab-content hidden">
-        <div class="card">
-            <h3>Direct Messages 💬</h3>
-            <div id="chatList"></div>
-        </div>
-    </div>
-
-    <div id="notifTab" class="tab-content hidden">
+    <div id="notifView" class="tab-view hidden">
         <div class="card">
             <h3>Notifications 🔔</h3>
             <div id="notifList"></div>
         </div>
     </div>
 
-    <div id="profileTab" class="tab-content hidden">
-        <div id="profileView" class="card" style="text-align:center">
-            <img id="p-pic" class="profile-pic" style="width:80px; height:80px;">
-            <h2 id="p-user">@username</h2>
-            <p id="p-bio">Buzzzing...</p>
-            <div id="profileActions" style="margin-bottom:15px;">
-                <button id="followBtn" class="btn-yellow">Follow</button>
-                <button id="msgBtn" class="btn-yellow" style="background:#eee">Message</button>
+    <div id="msgView" class="tab-view hidden">
+        <div class="card">
+            <h3 id="chatTitle">Messenger 💬</h3>
+            <div id="chatRoomArea" class="hidden">
+                <div id="chatMessages" class="chat-room"></div>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="chatInput" placeholder="Write a message..." style="flex:1; padding:10px; border-radius:10px; border:1px solid #ddd;">
+                    <button class="btn-yellow" id="sendMsgBtn">Send</button>
+                </div>
             </div>
-            <div id="userPosts"></div>
+            <p id="noChatMsg" style="text-align:center; color:#888;">Visit a profile to start a chat!</p>
         </div>
     </div>
 
-    <div id="chatRoom" class="card hidden">
-        <button onclick="switchTab('messenger')" style="float:left">⬅️ Back</button>
-        <h3 id="chatWith" style="text-align:center">Chat</h3>
-        <div id="messages" style="height:300px; overflow-y:auto; display:flex; flex-direction:column; gap:5px; padding:10px; border:1px solid #eee; margin-bottom:10px;"></div>
-        <div style="display:flex; gap:5px;">
-            <input type="text" id="chatInput" placeholder="Type a message...">
-            <button class="btn-yellow" id="sendMsgBtn">Send</button>
+    <div id="profileView" class="tab-view hidden">
+        <div class="card" style="text-align:center">
+            <img id="p-pic" class="profile-pic" style="width:80px; height:80px;">
+            <h2 id="p-user">@username</h2>
+            <div id="profileActions" style="margin:15px 0;">
+                <button id="followBtn" class="btn-yellow">Follow</button>
+                <button id="dmBtn" class="btn-yellow" style="background:#eee">Message</button>
+            </div>
+            <div id="userPosts"></div>
         </div>
     </div>
 </div>
 
 <nav id="bottomNav" class="hidden">
-    <button id="navHome" onclick="switchTab('home')" class="active">🏠</button>
-    <button id="navNotif" onclick="switchTab('notif')">🔔<span id="notifBadge" class="badge hidden">0</span></button>
-    <button id="navMsg" onclick="switchTab('messenger')">💬</button>
+    <button id="navHome" onclick="switchView('home')" class="active">🏠</button>
+    <button id="navNotif" onclick="switchView('notif')">🔔<div id="notifDot" class="badge-dot"></div></button>
+    <button id="navMsg" onclick="switchView('msg')">💬</button>
     <button id="navProfile" onclick="viewProfile(currentUsername)">👤</button>
 </nav>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, doc, getDoc, setDoc, deleteDoc, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, doc, getDoc, setDoc, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
   import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
   const firebaseConfig = {
@@ -119,7 +120,11 @@
 
   let currentUser = null;
   let currentUsername = "";
-  let currentChatId = null;
+  let activeChatId = null;
+
+  // Blue Checkmark logic
+  const checkmark = '<span class="verified-badge">✔</span>';
+  const isVerified = (user) => user === "dugzhak" || user === "arnold23"; // Ilagay ang username mo rito
 
   window.login = () => signInWithPopup(auth, provider);
 
@@ -132,7 +137,7 @@
         currentUsername = uSnap.data().username;
         startApp();
       } else {
-        const name = prompt("Unique Username:");
+        const name = prompt("Claim your @username:");
         if (name) {
           await setDoc(doc(db, "usernames", name.toLowerCase()), { uid: user.uid });
           await setDoc(doc(db, "users", user.uid), { username: name.toLowerCase(), photo: user.photoURL });
@@ -151,24 +156,23 @@
 
   // --- NOTIFICATIONS ---
   function listenNotifs() {
-    const q = query(collection(db, "users", currentUser.uid, "notifs"), orderBy("time", "desc"), limit(20));
+    const q = query(collection(db, "users", currentUser.uid, "notifs"), orderBy("time", "desc"), limit(15));
     onSnapshot(q, s => {
       const list = document.getElementById('notifList');
       list.innerHTML = "";
-      document.getElementById('notifBadge').innerText = s.size;
-      document.getElementById('notifBadge').classList.toggle('hidden', s.size === 0);
+      if (!s.empty) document.getElementById('notifDot').style.display = 'block';
       s.forEach(d => {
-        list.innerHTML += `<div class="notif-item">🐝 <b>@${d.data().from}</b> ${d.data().msg}</div>`;
+        list.innerHTML += `<div class="notif-item">🔥 <b>@${d.data().from}</b> ${d.data().msg}</div>`;
       });
     });
   }
 
-  async function sendNotif(targetUid, msg) {
+  async function pushNotif(targetUid, msg) {
     if (targetUid === currentUser.uid) return;
     await addDoc(collection(db, "users", targetUid, "notifs"), { from: currentUsername, msg: msg, time: serverTimestamp() });
   }
 
-  // --- FEED & PROFILE ---
+  // --- FEED ---
   function loadFeed() {
     const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
     onSnapshot(q, s => {
@@ -178,9 +182,9 @@
         const data = d.data();
         feed.innerHTML += `
           <div class="post">
-            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
-                <img src="${data.userPhoto}" class="profile-pic" style="width:30px; height:30px;" onclick="viewProfile('${data.user}')">
-                <b onclick="viewProfile('${data.user}')">@${data.user}</b>
+            <div class="post-header">
+                <img src="${data.userPhoto}" class="profile-pic" onclick="viewProfile('${data.user}')">
+                <b onclick="viewProfile('${data.user}')">@${data.user}${isVerified(data.user) ? checkmark : ''}</b>
             </div>
             <div>${data.content}</div>
           </div>`;
@@ -188,36 +192,38 @@
     });
   }
 
+  // --- PROFILE & FOLLOW ---
   window.viewProfile = async (username) => {
-    switchTab('profile');
+    switchView('profile');
     const uSnap = await getDocs(query(collection(db, "users"), where("username", "==", username)));
     uSnap.forEach(async d => {
-        const uData = d.data();
-        document.getElementById('p-user').innerText = "@" + username;
-        document.getElementById('p-pic').src = uData.photo;
+        document.getElementById('p-user').innerHTML = "@" + username + (isVerified(username) ? checkmark : '');
+        document.getElementById('p-pic').src = d.data().photo;
         document.getElementById('profileActions').classList.toggle('hidden', username === currentUsername);
         
         document.getElementById('followBtn').onclick = () => {
-            sendNotif(d.id, "started following you!");
-            alert("Followed!");
+            pushNotif(d.id, "started following you!");
+            alert("Followed @"+username);
         };
-        document.getElementById('msgBtn').onclick = () => openChat(d.id, username);
+        document.getElementById('dmBtn').onclick = () => startChat(d.id, username);
     });
   }
 
   // --- MESSENGER ---
-  async function openChat(targetUid, targetName) {
-    switchTab('chat');
-    document.getElementById('chatWith').innerText = "Chat with @" + targetName;
-    currentChatId = [currentUser.uid, targetUid].sort().join("_");
+  async function startChat(targetUid, targetName) {
+    switchView('msg');
+    document.getElementById('noChatMsg').classList.add('hidden');
+    document.getElementById('chatRoomArea').classList.remove('hidden');
+    document.getElementById('chatTitle').innerText = "Chat with @" + targetName;
     
-    const q = query(collection(db, "chats", currentChatId, "messages"), orderBy("time", "asc"));
+    activeChatId = [currentUser.uid, targetUid].sort().join("_");
+    const q = query(collection(db, "chats", activeChatId, "messages"), orderBy("time", "asc"));
     onSnapshot(q, s => {
-        const box = document.getElementById('messages');
+        const box = document.getElementById('chatMessages');
         box.innerHTML = "";
         s.forEach(m => {
             const isMe = m.data().sender === currentUser.uid;
-            box.innerHTML += `<div class="chat-msg ${isMe ? 'msg-me' : 'msg-them'}">${m.data().text}</div>`;
+            box.innerHTML += `<div class="bubble ${isMe ? 'bubble-me' : 'bubble-them'}">${m.data().text}</div>`;
         });
         box.scrollTop = box.scrollHeight;
     });
@@ -225,27 +231,20 @@
 
   document.getElementById('sendMsgBtn').onclick = async () => {
     const input = document.getElementById('chatInput');
-    if (!input.value.trim() || !currentChatId) return;
-    await addDoc(collection(db, "chats", currentChatId, "messages"), {
-        text: input.value,
-        sender: currentUser.uid,
-        time: serverTimestamp()
-    });
+    if (!input.value.trim() || !activeChatId) return;
+    await addDoc(collection(db, "chats", activeChatId, "messages"), { text: input.value, sender: currentUser.uid, time: serverTimestamp() });
     input.value = "";
   };
 
-  // --- TAB SYSTEM ---
-  window.switchTab = (tab) => {
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-    document.getElementById('chatRoom').classList.add('hidden');
-    if(tab === 'home') document.getElementById('homeTab').classList.remove('hidden');
-    if(tab === 'notif') document.getElementById('notifTab').classList.remove('hidden');
-    if(tab === 'messenger') document.getElementById('messengerTab').classList.remove('hidden');
-    if(tab === 'profile') document.getElementById('profileTab').classList.remove('hidden');
-    if(tab === 'chat') document.getElementById('chatRoom').classList.remove('hidden');
+  // --- NAV SYSTEM ---
+  window.switchView = (view) => {
+    document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
+    document.getElementById(view + 'View').classList.remove('hidden');
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById('nav' + view.charAt(0).toUpperCase() + view.slice(1)).classList.add('active');
+    if (view === 'notif') document.getElementById('notifDot').style.display = 'none';
   }
 
-  // Post Logic
   document.getElementById('postBtn').onclick = async () => {
     const val = document.getElementById('postInput').value;
     if (!val.trim()) return;
