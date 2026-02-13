@@ -5,65 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mobuzzz - The Hive</title>
     <style>
-        :root { --main-yellow: #FFD700; --bg: #FFFDF0; --error: #ff4d4d; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
-        header { background: var(--main-yellow); padding: 15px; text-align: center; font-size: 28px; font-weight: bold; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        :root { --main-yellow: #FFD700; --bg: #FFFDF0; --gray: #888; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; }
         
-        /* Auth & Setup Containers */
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 500px; margin: 0 auto 20px; border: 2px solid var(--main-yellow); }
+        header { background: var(--main-yellow); padding: 15px; text-align: center; font-size: 24px; font-weight: bold; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        .container { padding: 15px; max-width: 500px; margin: 0 auto; }
+        .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
         .hidden { display: none; }
+
+        /* Post Styling */
+        .post { background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .user-info { font-weight: bold; cursor: pointer; color: #222; }
+        .post-time { font-size: 12px; color: var(--gray); }
+        .post-content { margin-bottom: 15px; line-height: 1.4; word-wrap: break-word; }
+
+        /* Action Bar */
+        .action-bar { display: flex; justify-content: space-around; border-top: 1px solid #f5f5f5; padding-top: 10px; }
+        .action-btn { background: none; border: none; cursor: pointer; font-size: 14px; color: #555; display: flex; align-items: center; gap: 5px; }
         
-        #loginBtn { background: white; border: 2px solid #4285F4; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; display: block; margin: 0 auto; transition: 0.3s; }
-        #loginBtn:hover { background: #f1f1f1; }
+        /* Comment Section */
+        .comment-section { margin-top: 10px; padding-top: 10px; border-top: 1px dotted #eee; font-size: 13px; }
+        .comment-input-box { display: flex; gap: 5px; margin-top: 10px; }
+        .comment-input { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #ddd; outline: none; }
 
-        input[type="text"], textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; outline: none; font-family: inherit; }
-        input[type="text"]:focus { border-color: var(--main-yellow); }
+        /* Bottom Nav */
+        nav { display: flex; justify-content: space-around; background: white; padding: 12px 0; border-top: 2px solid var(--main-yellow); position: fixed; bottom: 0; width: 100%; z-index: 1000; }
+        nav button { background: none; border: none; font-weight: bold; cursor: pointer; color: var(--gray); font-size: 16px; }
+        nav button.active { color: #000; border-bottom: 2px solid var(--main-yellow); }
 
-        .btn-action { background: var(--main-yellow); border: none; padding: 10px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-action:hover { transform: scale(1.05); background: #f0c800; }
+        .btn-yellow { background: var(--main-yellow); border: none; padding: 12px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-yellow:hover { transform: scale(1.02); }
         
-        .error-msg { color: var(--error); font-size: 14px; margin-bottom: 10px; font-weight: bold; }
-        #userWelcome { text-align: center; font-weight: bold; margin-bottom: 15px; color: #555; }
-
-        /* Feed */
-        #feed { max-width: 500px; margin: 0 auto; }
-        .post { background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; border-left: 8px solid var(--main-yellow); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .post-header { font-weight: bold; color: #222; margin-bottom: 8px; font-size: 15px; }
-        .post-content { margin: 0; line-height: 1.5; color: #444; }
+        #profileHeader { text-align: center; background: var(--main-yellow); padding: 20px; border-radius: 15px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
 <header>🐝 Mobuzzz</header>
 
-<div id="authSection" class="card">
-    <button id="loginBtn">Log in with Google to enter the Hive</button>
-</div>
-
-<div id="usernameSetup" class="card hidden">
-    <h3 style="margin-top:0;">Welcome! 🍯</h3>
-    <p>Choose your unique username to start buzzzing:</p>
-    <input type="text" id="usernameInput" placeholder="ex: queen_bee23">
-    <div id="usernameError" class="error-msg hidden"></div>
-    <button id="saveUsernameBtn" class="btn-action">Claim Username</button>
-</div>
-
-<div id="postArea" class="card hidden">
-    <div id="userWelcome"></div>
-    <textarea id="postInput" placeholder="What's the buzz today?"></textarea>
-    <div style="text-align: right;">
-        <button id="postBtn" class="btn-action">Post to Hive</button>
+<div class="container">
+    <div id="authSection" class="card">
+        <button class="btn-yellow" onclick="login()" style="width:100%">Log in with Google to Post</button>
     </div>
+
+    <div id="usernameSetup" class="card hidden">
+        <h3>Welcome to the Hive! 🍯</h3>
+        <p>Choose a unique username:</p>
+        <input type="text" id="usernameInput" placeholder="username_ko" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
+        <button class="btn-yellow" id="saveUsernameBtn" style="width:100%">Claim Username</button>
+    </div>
+
+    <div id="profileHeader" class="hidden">
+        <h2 id="viewingUser">@username</h2>
+        <p>User Feed</p>
+    </div>
+
+    <div id="postArea" class="card hidden">
+        <textarea id="postInput" placeholder="Anong buzzzz mo ngayon?" style="width:100%; border:none; outline:none; resize:none; font-size:16px; min-height:60px;"></textarea>
+        <button class="btn-yellow" id="postBtn" style="float:right; padding: 8px 20px;">Buzz It!</button>
+        <div style="clear:both"></div>
+    </div>
+
+    <div id="feed"></div>
 </div>
 
-<div id="feed"></div>
+<nav id="bottomNav" class="hidden">
+    <button id="navHome" class="active">🏠 Home</button>
+    <button id="navProfile">👤 Profile</button>
+</nav>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, doc, getDoc, setDoc, deleteDoc, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
   import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-  // FIREBASE CONFIG (Arnold23's Credentials)
+  // --- IYONG FIREBASE CONFIG ---
   const firebaseConfig = {
     apiKey: "AIzaSyD7d5ShdJ6djY3V5mDinsiCYZcUnBGTQpk",
     authDomain: "mobuzzz-ce112.firebaseapp.com",
@@ -81,101 +99,160 @@
 
   let currentUser = null;
   let currentUsername = "";
+  let unsubscribeFeed = null;
 
-  // AUTH OBSERVER
+  // Login
+  window.login = () => signInWithPopup(auth, provider).catch(e => console.log("Login Cancelled"));
+
+  // Time Formatter
+  const timeAgo = (timestamp) => {
+    if (!timestamp) return "Just now";
+    const seconds = Math.floor((new Date() - timestamp.toDate()) / 1000);
+    if (seconds < 60) return "Just now";
+    const mins = Math.floor(seconds / 60);
+    if (mins < 60) return mins + "m ago";
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return hours + "h ago";
+    return Math.floor(hours / 24) + "d ago";
+  };
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       currentUser = user;
       document.getElementById('authSection').classList.add('hidden');
-      
-      // Check if user already has a username
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
-
+      const userSnap = await getDoc(doc(db, "users", user.uid));
       if (userSnap.exists()) {
         currentUsername = userSnap.data().username;
-        showApp();
+        startApp();
       } else {
         document.getElementById('usernameSetup').classList.remove('hidden');
       }
     }
   });
 
-  // LOGIN BUTTON
-  document.getElementById('loginBtn').onclick = () => {
-    signInWithPopup(auth, provider).catch(err => alert("Login failed!"));
-  };
-
-  // SAVE UNIQUE USERNAME
   document.getElementById('saveUsernameBtn').onclick = async () => {
     const input = document.getElementById('usernameInput').value.trim().toLowerCase();
-    const errorDiv = document.getElementById('usernameError');
+    if (input.length < 3) return alert("Masyadong maikli!");
     
-    // Simple validation
-    if (input.length < 3) {
-        errorDiv.innerText = "Username must be at least 3 characters!";
-        errorDiv.classList.remove('hidden');
-        return;
-    }
-
-    // UNIQUE CHECK
     const nameRef = doc(db, "usernames", input);
     const nameSnap = await getDoc(nameRef);
 
     if (nameSnap.exists()) {
-        errorDiv.innerText = "Buzzz! That username is already taken. ❌";
-        errorDiv.classList.remove('hidden');
+      alert("Username taken! ❌");
     } else {
-        try {
-            // Reserve username and link to UID
-            await setDoc(doc(db, "usernames", input), { uid: currentUser.uid });
-            await setDoc(doc(db, "users", currentUser.uid), {
-                username: input,
-                photo: currentUser.photoURL
-            });
-            currentUsername = input;
-            showApp();
-        } catch (e) {
-            alert("Error saving your identity.");
-        }
+      await setDoc(doc(db, "usernames", input), { uid: currentUser.uid });
+      await setDoc(doc(db, "users", currentUser.uid), { username: input });
+      currentUsername = input;
+      startApp();
     }
   };
 
-  function showApp() {
+  function startApp() {
     document.getElementById('usernameSetup').classList.add('hidden');
+    document.getElementById('bottomNav').classList.remove('hidden');
     document.getElementById('postArea').classList.remove('hidden');
-    document.getElementById('userWelcome').innerText = "Logged in as @" + currentUsername;
+    loadFeed();
   }
 
-  // POST TO HIVE
-  document.getElementById('postBtn').onclick = async () => {
-    const text = document.getElementById('postInput').value;
-    if (text.trim() === "") return;
-
-    await addDoc(collection(db, "posts"), {
-      content: text,
-      timestamp: serverTimestamp(),
-      user: currentUsername
-    });
-    document.getElementById('postInput').value = "";
+  // Navigation
+  document.getElementById('navHome').onclick = () => {
+    switchTab('home');
+    loadFeed();
+  };
+  document.getElementById('navProfile').onclick = () => {
+    switchTab('profile');
+    loadFeed(currentUsername);
   };
 
-  // REAL-TIME FEED
-  const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
-  onSnapshot(q, (snapshot) => {
-    const feed = document.getElementById('feed');
-    feed.innerHTML = "";
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      feed.innerHTML += `
-        <div class="post">
-            <div class="post-header">@${data.user}</div>
-            <p class="post-content">${data.content}</p>
-        </div>
-      `;
-    });
-  });
-</script>
+  function switchTab(tab) {
+    document.getElementById('navHome').classList.toggle('active', tab === 'home');
+    document.getElementById('navProfile').classList.toggle('active', tab === 'profile');
+    document.getElementById('profileHeader').classList.toggle('hidden', tab !== 'profile');
+    document.getElementById('viewingUser').innerText = "@" + currentUsername;
+    document.getElementById('postArea').classList.toggle('hidden', tab !== 'home');
+  }
 
+  function loadFeed(filterUser = null) {
+    if (unsubscribeFeed) unsubscribeFeed();
+    
+    let q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+    if (filterUser) {
+      q = query(collection(db, "posts"), where("user", "==", filterUser), orderBy("timestamp", "desc"));
+    }
+
+    unsubscribeFeed = onSnapshot(q, (snapshot) => {
+      const feed = document.getElementById('feed');
+      feed.innerHTML = "";
+      snapshot.forEach(postDoc => {
+        const data = postDoc.data();
+        const id = postDoc.id;
+        const postDiv = document.createElement('div');
+        postDiv.className = 'post';
+        postDiv.innerHTML = `
+          <div class="post-header">
+            <span class="user-info" onclick="viewUser('${data.user}')">@${data.user}</span>
+            <span class="post-time">${timeAgo(data.timestamp)}</span>
+          </div>
+          <div class="post-content">${data.content}</div>
+          <div class="action-bar">
+            <button class="action-btn" onclick="like('${id}')">❤️ <span id="l-${id}">0</span></button>
+            <button class="action-btn" onclick="document.getElementById('c-sec-${id}').classList.toggle('hidden')">💬 <span id="cc-${id}">0</span></button>
+            <button class="action-btn" onclick="share('${id}')">🔗 Share</button>
+          </div>
+          <div id="c-sec-${id}" class="comment-section hidden">
+            <div id="c-list-${id}"></div>
+            <div class="comment-input-box">
+              <input type="text" id="c-in-${id}" class="comment-input" placeholder="Comment...">
+              <button onclick="addComment('${id}')">send</button>
+            </div>
+          </div>
+        `;
+        feed.appendChild(postDiv);
+        initInteractions(id);
+      });
+    });
+  }
+
+  window.viewUser = (username) => {
+    document.getElementById('profileHeader').classList.remove('hidden');
+    document.getElementById('viewingUser').innerText = "@" + username;
+    document.getElementById('postArea').classList.add('hidden');
+    loadFeed(username);
+  };
+
+  function initInteractions(postId) {
+    onSnapshot(collection(db, "posts", postId, "likes"), s => document.getElementById(`l-${postId}`).innerText = s.size);
+    onSnapshot(query(collection(db, "posts", postId, "comments"), orderBy("timestamp", "asc")), s => {
+      document.getElementById(`cc-${postId}`).innerText = s.size;
+      const list = document.getElementById(`c-list-${postId}`);
+      list.innerHTML = "";
+      s.forEach(c => list.innerHTML += `<div><b>@${c.data().user}</b>: ${c.data().text}</div>`);
+    });
+  }
+
+  window.like = async (id) => {
+    const lRef = doc(db, "posts", id, "likes", currentUser.uid);
+    (await getDoc(lRef)).exists() ? await deleteDoc(lRef) : await setDoc(lRef, { u: currentUsername });
+  };
+
+  window.addComment = async (id) => {
+    const val = document.getElementById(`c-in-${id}`).value;
+    if (!val.trim()) return;
+    await addDoc(collection(db, "posts", id, "comments"), { text: val, user: currentUsername, timestamp: serverTimestamp() });
+    document.getElementById(`c-in-${id}`).value = "";
+  };
+
+  window.share = (id) => {
+    navigator.clipboard.writeText(window.location.origin + "?p=" + id);
+    alert("Link copied! 🔗");
+  };
+
+  document.getElementById('postBtn').onclick = async () => {
+    const val = document.getElementById('postInput').value;
+    if (!val.trim()) return;
+    await addDoc(collection(db, "posts"), { content: val, user: currentUsername, timestamp: serverTimestamp() });
+    document.getElementById('postInput').value = "";
+  };
+</script>
 </body>
 </html>
