@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mobuzzz Super App</title>
+    <title>Mobuzzz</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FFD700">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
     <style>
-        :root { --main-yellow: #FFD700; --bg: #FFFDF0; --gray: #888; --blue-badge: #1DA1F2; --danger: #ff4757; }
+        :root { --main-yellow: #FFD700; --bg: #FFFDF0; --blue-badge: #1DA1F2; --danger: #ff4757; }
         
         body { 
             font-family: 'Segoe UI', sans-serif; 
@@ -33,7 +33,6 @@
             top: 0; 
             z-index: 2000; 
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            display: flex; justify-content: center; align-items: center; gap: 10px;
         }
         
         .container { padding: 10px; max-width: 500px; margin: 0 auto; }
@@ -43,13 +42,13 @@
         /* Game Iframe */
         .game-frame {
             width: 100%;
-            height: calc(100vh - 160px); /* Sakto sa screen minus header/nav */
+            height: calc(100vh - 160px); 
             border: none;
             border-radius: 15px;
             background: #000;
         }
 
-        /* Post & Profile Styling */
+        /* Post Styling */
         .verified-badge { color: var(--blue-badge); font-size: 14px; margin-left: 4px; vertical-align: middle; }
         .profile-pic { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--main-yellow); cursor: pointer; }
         .post { background: white; padding: 15px; border-radius: 18px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); position: relative; border: 1px solid #f5f5f5; }
@@ -59,20 +58,17 @@
         .action-bar { display: flex; justify-content: space-around; border-top: 1px solid #f9f9f9; padding-top: 12px; margin-top: 10px; }
         .action-btn { background: none; border: none; cursor: pointer; font-size: 14px; color: #666; display: flex; align-items: center; gap: 6px; font-weight: 600; }
         
-        /* Comments & Notifs */
-        .comment-section { margin-top: 10px; padding-top: 10px; border-top: 1px dotted #eee; font-size: 13px; }
+        /* Notifs & Chat */
         .notif-item { padding: 15px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 12px; background: white; border-radius: 10px; margin-bottom: 5px; }
-        
-        /* Messenger Bubbles */
         .bubble { padding: 10px 14px; border-radius: 18px; max-width: 75%; font-size: 15px; margin-bottom: 6px; word-wrap: break-word; }
-        .bubble-me { background: var(--main-yellow); align-self: flex-end; color: black; border-bottom-right-radius: 4px; }
-        .bubble-them { background: #f0f0f0; align-self: flex-start; color: black; border-bottom-left-radius: 4px; }
+        .bubble-me { background: var(--main-yellow); align-self: flex-end; }
+        .bubble-them { background: #f0f0f0; align-self: flex-start; }
 
         /* Nav */
         nav { display: flex; justify-content: space-around; background: white; padding: 15px 0; border-top: 1px solid #eee; position: fixed; bottom: 0; width: 100%; z-index: 2000; padding-bottom: max(15px, env(safe-area-inset-bottom)); }
         nav button { background: none; border: none; font-size: 24px; cursor: pointer; color: #ccc; position: relative; transition: 0.2s; }
         nav button.active { color: #000; transform: translateY(-3px); }
-        .badge-dot { position: absolute; top: 0; right: 0; width: 8px; height: 8px; background: red; border-radius: 50%; display: none; border: 2px solid white; }
+        .badge-dot { position: absolute; top: 0; right: 0; width: 10px; height: 10px; background: red; border-radius: 50%; display: none; border: 2px solid white; }
         .btn-yellow { background: var(--main-yellow); border: none; padding: 10px 24px; border-radius: 25px; font-weight: bold; cursor: pointer; font-size: 14px; }
         
         input, textarea { font-family: inherit; }
@@ -86,7 +82,7 @@
     <div id="authSection" class="card">
         <div style="text-align:center; padding:20px;">
             <h2>Welcome Hive!</h2>
-            <button class="btn-yellow" onclick="login()" style="width:100%">Continue with Google</button>
+            <button class="btn-yellow" onclick="login()" style="width:100%">Log in with Google</button>
         </div>
     </div>
 
@@ -95,7 +91,7 @@
             <textarea id="postInput" placeholder="What's happening?" style="width:100%; border:none; outline:none; resize:none; font-size:16px; min-height:60px;"></textarea>
             <div id="imagePreviewContainer" class="hidden"><img id="postImagePreview" style="width:100%; border-radius:10px; margin-bottom:10px;"></div>
             <div style="display:flex; justify-content: space-between; align-items: center; margin-top:10px; border-top:1px solid #f9f9f9; padding-top:10px;">
-                <label for="postImageUpload" style="cursor:pointer; font-size:20px; padding:5px;">🖼️</label>
+                <label for="postImageUpload" style="cursor:pointer; font-size:20px; padding:5px;">📷</label>
                 <input type="file" id="postImageUpload" accept="image/*" style="display:none;">
                 <button class="btn-yellow" id="postBtn">Buzz</button>
             </div>
@@ -105,9 +101,9 @@
 
     <div id="gameView" class="tab-view hidden">
         <div class="card" style="padding:0; overflow:hidden; background:black;">
-            <iframe src="https://pinoy-pool.vercel.app" class="game-frame" title="Pinoy Pool"></iframe>
+            <iframe src="https://arnoldtasipit66-wq.github.io/my-game-assets/" class="game-frame" title="Pinoy Pool"></iframe>
         </div>
-        <p style="text-align:center; color:#888; font-size:12px;">Enjoy playing Pinoy Pool inside Mobuzzz! 🎱</p>
+        <p style="text-align:center; color:#888; font-size:12px;">Pinoy Pool - Mobuzzz Edition 🎱</p>
     </div>
 
     <div id="notifView" class="tab-view hidden">
@@ -145,7 +141,8 @@
 
 <nav id="bottomNav" class="hidden">
     <button id="navHome" onclick="switchView('home')" class="active">🏠</button>
-    <button id="navGame" onclick="switchView('game')">🎱</button> <button id="navNotif" onclick="switchView('notif')">🔔<div id="notifDot" class="badge-dot"></div></button>
+    <button id="navGame" onclick="switchView('game')">🎱</button>
+    <button id="navNotif" onclick="switchView('notif')">🔔<div id="notifDot" class="badge-dot"></div></button>
     <button id="navMsg" onclick="switchView('msg')">💬</button>
     <button id="navProfile" onclick="viewProfile(currentUsername)">👤</button>
 </nav>
@@ -192,7 +189,7 @@
         currentProfilePic = uSnap.data().photo || user.photoURL;
         startApp();
       } else {
-        const name = prompt("Create your username:");
+        const name = prompt("Username:");
         if (name) {
           await setDoc(doc(db, "usernames", name.toLowerCase()), { uid: user.uid });
           await setDoc(doc(db, "users", user.uid), { username: name.toLowerCase(), photo: user.photoURL });
@@ -209,35 +206,13 @@
     listenNotifs();
   }
 
-  // --- ACTIONS ---
-  window.deletePost = async (id) => {
-    if (confirm("Delete this buzz?")) await deleteDoc(doc(db, "posts", id));
-  };
-
-  window.like = async (id, targetUser) => {
-    const lRef = doc(db, "posts", id, "likes", currentUser.uid);
-    const snap = await getDoc(lRef);
-    if (snap.exists()) {
-        await deleteDoc(lRef);
-    } else {
-        await setDoc(lRef, { u: currentUsername });
-        pushNotif(targetUser, "liked your buzz! ❤️");
-    }
-  };
-
-  window.addComment = async (id, targetUser) => {
-    const val = document.getElementById(`c-in-${id}`).value;
-    if (!val.trim()) return;
-    await addDoc(collection(db, "posts", id, "comments"), { text: val, user: currentUsername, timestamp: serverTimestamp() });
-    document.getElementById(`c-in-${id}`).value = "";
-    pushNotif(targetUser, "commented on your buzz 💬");
-  };
-
-  async function pushNotif(username, msg) {
-    if(username === currentUsername) return; 
-    const uSnap = await getDocs(query(collection(db, "users"), where("username", "==", username)));
-    uSnap.forEach(async d => {
-        await addDoc(collection(db, d.id, "notifs"), { from: currentUsername, msg: msg, time: serverTimestamp() });
+  // --- REVISED NOTIF LOGIC (Direct UID Targeting) ---
+  async function pushNotif(targetUid, msg) {
+    if(targetUid === currentUser.uid) return; 
+    await addDoc(collection(db, targetUid, "notifs"), { 
+        from: currentUsername, 
+        msg: msg, 
+        time: serverTimestamp() 
     });
   }
 
@@ -254,6 +229,32 @@
     });
   }
 
+  // --- ACTIONS ---
+  window.deletePost = async (id) => {
+    if (confirm("Delete this buzz?")) await deleteDoc(doc(db, "posts", id));
+  };
+
+  // UPDATED LIKE: Passes target UID directly for sure-fire notification
+  window.like = async (id, targetUid) => {
+    const lRef = doc(db, "posts", id, "likes", currentUser.uid);
+    const snap = await getDoc(lRef);
+    if (snap.exists()) {
+        await deleteDoc(lRef);
+    } else {
+        await setDoc(lRef, { u: currentUsername });
+        pushNotif(targetUid, "liked your buzz! ❤️");
+    }
+  };
+
+  // UPDATED COMMENT: Passes target UID directly
+  window.addComment = async (id, targetUid) => {
+    const val = document.getElementById(`c-in-${id}`).value;
+    if (!val.trim()) return;
+    await addDoc(collection(db, "posts", id, "comments"), { text: val, user: currentUsername, timestamp: serverTimestamp() });
+    document.getElementById(`c-in-${id}`).value = "";
+    pushNotif(targetUid, "commented on your buzz 💬");
+  };
+
   // --- FEED ---
   function loadFeed() {
     const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
@@ -264,6 +265,7 @@
         const d = postDoc.data();
         const id = postDoc.id;
         const deleteBtn = (currentUser && d.uid === currentUser.uid) ? `<button class="btn-delete" onclick="deletePost('${id}')">🗑️</button>` : '';
+
         const div = document.createElement('div');
         div.className = 'post';
         div.innerHTML = `
@@ -278,14 +280,14 @@
           <div class="post-content">${d.content}</div>
           ${d.postImage ? `<img class="post-img" src="${d.postImage}">` : ''}
           <div class="action-bar">
-            <button class="action-btn" onclick="like('${id}', '${d.user}')">❤️ <span id="l-${id}">0</span></button>
+            <button class="action-btn" onclick="like('${id}', '${d.uid}')">❤️ <span id="l-${id}">0</span></button>
             <button class="action-btn" onclick="document.getElementById('c-sec-${id}').classList.toggle('hidden')">💬 <span id="cc-${id}">0</span></button>
           </div>
           <div id="c-sec-${id}" class="comment-section hidden">
             <div id="c-list-${id}"></div>
             <div style="display:flex; gap:8px; margin-top:10px;">
-              <input type="text" id="c-in-${id}" placeholder="Add a comment..." style="flex:1; border:none; background:#f5f5f5; padding:8px 12px; border-radius:15px; outline:none;">
-              <button class="btn-yellow" style="padding:5px 15px;" onclick="addComment('${id}', '${d.user}')">➤</button>
+              <input type="text" id="c-in-${id}" placeholder="Comment..." style="flex:1; border:none; background:#f5f5f5; padding:8px 12px; border-radius:15px; outline:none;">
+              <button class="btn-yellow" style="padding:5px 15px;" onclick="addComment('${id}', '${d.uid}')">➤</button>
             </div>
           </div>
         `;
@@ -314,9 +316,14 @@
         document.getElementById('p-pic').src = d.data().photo;
         const isMe = un === currentUsername;
         document.getElementById('profileActions').style.display = isMe ? 'none' : 'flex';
-        document.getElementById('followBtn').onclick = () => { pushNotif(un, "started following you! 🚀"); alert("Following!"); };
+        
+        document.getElementById('followBtn').onclick = () => { 
+            pushNotif(d.id, "started following you! 🚀"); 
+            alert("Following!"); 
+        };
         document.getElementById('dmBtn').onclick = () => startChat(d.id, un);
     });
+    // Load User Posts
     const pSnap = await getDocs(query(collection(db, "posts"), where("user", "==", un), orderBy("timestamp", "desc")));
     const uFeed = document.getElementById('userFeed'); uFeed.innerHTML = "";
     pSnap.forEach(doc => { uFeed.innerHTML += `<div class="post"><div class="post-content">${doc.data().content}</div></div>`; });
@@ -328,8 +335,10 @@
     document.getElementById('chatRoomArea').classList.remove('hidden');
     document.getElementById('chatTitle').innerText = "@" + targetName;
     activeChatId = [currentUser.uid, targetUid].sort().join("_");
+    
     onSnapshot(query(collection(db, "chats", activeChatId, "messages"), orderBy("time", "asc")), s => {
-        const box = document.getElementById('chatMessages'); box.innerHTML = "";
+        const box = document.getElementById('chatMessages'); 
+        box.innerHTML = "";
         s.forEach(m => {
             const isMe = m.data().sender === currentUser.uid;
             box.innerHTML += `<div class="bubble ${isMe ? 'bubble-me' : 'bubble-them'}">${m.data().text}</div>`;
