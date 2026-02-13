@@ -21,7 +21,7 @@
             overscroll-behavior-y: none;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
-            overflow-x: hidden; /* Prevent side scroll */
+            overflow-x: hidden;
         }
 
         header { 
@@ -67,21 +67,19 @@
             border: none;
         }
 
-        /* Class to trigger Landscape Mode */
         .landscape-mode {
             position: fixed !important;
             top: 0;
             left: 0;
-            width: 100vh !important; /* Height becomes Width */
-            height: 100vw !important; /* Width becomes Height */
+            width: 100vh !important;
+            height: 100vw !important;
             z-index: 5000;
             transform: rotate(90deg);
             transform-origin: top left;
-            margin-left: 100vw; /* Push it back into view */
+            margin-left: 100vw;
             border-radius: 0 !important;
         }
 
-        /* Rotate Button */
         #rotateBtn {
             background: #222;
             color: white;
@@ -94,6 +92,7 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            z-index: 6000; /* Ensure it's always on top */
         }
         /* -------------------------------- */
 
@@ -236,22 +235,25 @@
   // --- ROTATION LOGIC FOR GAME ---
   window.toggleGameRotation = () => {
     const game = document.getElementById('gameContainer');
+    const btn = document.getElementById('rotateBtn');
     game.classList.toggle('landscape-mode');
     
-    // Hide nav bar when in full landscape to prevent accidental clicks
     if (game.classList.contains('landscape-mode')) {
+        // Fullscreen Mode: Hide Nav/Header, Move Button to Top Right
         document.getElementById('bottomNav').style.display = 'none';
         document.querySelector('header').style.display = 'none';
-        document.getElementById('rotateBtn').innerText = "❌ Close Game";
-        document.getElementById('rotateBtn').style.position = 'fixed';
-        document.getElementById('rotateBtn').style.bottom = '10px';
-        document.getElementById('rotateBtn').style.right = '10px';
-        document.getElementById('rotateBtn').style.zIndex = '6000';
+        btn.innerText = "❌ Close Game";
+        btn.style.position = 'fixed';
+        btn.style.top = '10px'; // Move to top
+        btn.style.right = '10px'; // Move to right
+        btn.style.bottom = 'auto'; // Reset bottom
+        btn.style.zIndex = '6000';
     } else {
+        // Normal Mode: Show Nav/Header, Reset Button
         document.getElementById('bottomNav').style.display = 'flex';
         document.querySelector('header').style.display = 'block';
-        document.getElementById('rotateBtn').innerText = "🔄 Rotate Screen (Fullscreen)";
-        document.getElementById('rotateBtn').style.position = 'static';
+        btn.innerText = "🔄 Rotate Screen (Fullscreen)";
+        btn.style.position = 'static';
     }
   };
 
@@ -420,7 +422,6 @@
     document.getElementById('nav' + v.charAt(0).toUpperCase() + v.slice(1)).classList.add('active');
     if (v === 'notif') document.getElementById('notifDot').style.display = 'none';
     
-    // Reset rotation if leaving game tab
     if (v !== 'game') {
          document.getElementById('gameContainer').classList.remove('landscape-mode');
          document.getElementById('bottomNav').style.display = 'flex';
