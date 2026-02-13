@@ -3,47 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobuzzz - Empire</title>
+    <title>Mobuzzz - The Hive</title>
     <style>
-        :root { --main-yellow: #FFD700; --bg: #FFFDF0; --gray: #888; --blue-badge: #1DA1F2; --danger: #ff4757; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; color: #333; }
+        :root { --main-yellow: #FFD700; --bg: #FFFDF0; --gray: #888; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; }
         
-        header { background: var(--main-yellow); padding: 15px; text-align: center; font-size: 24px; font-weight: bold; position: sticky; top: 0; z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        header { background: var(--main-yellow); padding: 15px; text-align: center; font-size: 24px; font-weight: bold; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
-        .container { padding: 12px; max-width: 500px; margin: 0 auto; }
-        .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #eee; }
+        .container { padding: 15px; max-width: 500px; margin: 0 auto; }
+        .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
         .hidden { display: none; }
 
-        /* Badge & Profile */
-        .verified-badge { color: var(--blue-badge); font-size: 14px; margin-left: 4px; vertical-align: middle; }
-        .profile-pic { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--main-yellow); cursor: pointer; }
-        
         /* Post Styling */
-        .post { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; }
-        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .post-img { width: 100%; border-radius: 10px; margin-top: 10px; display: block; }
+        .post { background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .user-info { font-weight: bold; cursor: pointer; color: #222; }
+        .post-time { font-size: 12px; color: var(--gray); }
+        .post-content { margin-bottom: 15px; line-height: 1.4; word-wrap: break-word; }
+
+        /* Action Bar */
+        .action-bar { display: flex; justify-content: space-around; border-top: 1px solid #f5f5f5; padding-top: 10px; }
+        .action-btn { background: none; border: none; cursor: pointer; font-size: 14px; color: #555; display: flex; align-items: center; gap: 5px; }
         
-        /* Delete Button (Only visible to owner) */
-        .btn-delete { position: absolute; top: 10px; right: 10px; background: none; border: none; color: #ccc; cursor: pointer; font-size: 16px; padding: 5px; }
-        .btn-delete:hover { color: var(--danger); background: #fff0f0; border-radius: 50%; }
-
-        /* Actions */
-        .action-bar { display: flex; justify-content: space-around; border-top: 1px solid #f9f9f9; padding-top: 10px; margin-top: 10px; }
-        .action-btn { background: none; border: none; cursor: pointer; font-size: 13px; color: #555; display: flex; align-items: center; gap: 5px; font-weight: bold; }
-
-        /* Comments, Notifs, Messenger */
+        /* Comment Section */
         .comment-section { margin-top: 10px; padding-top: 10px; border-top: 1px dotted #eee; font-size: 13px; }
-        .notif-item { padding: 12px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 10px; }
-        .bubble { padding: 8px 12px; border-radius: 15px; max-width: 75%; font-size: 14px; margin-bottom: 5px; word-wrap: break-word; }
-        .bubble-me { background: var(--main-yellow); align-self: flex-end; }
-        .bubble-them { background: #eee; align-self: flex-start; }
+        .comment-input-box { display: flex; gap: 5px; margin-top: 10px; }
+        .comment-input { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #ddd; outline: none; }
 
-        /* Nav */
-        nav { display: flex; justify-content: space-around; background: white; padding: 12px 0; border-top: 2px solid var(--main-yellow); position: fixed; bottom: 0; width: 100%; z-index: 2000; }
-        nav button { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--gray); position: relative; transition: 0.2s; }
-        nav button.active { color: #000; transform: scale(1.1); }
-        .badge-dot { position: absolute; top: 0; right: 0; width: 10px; height: 10px; background: red; border-radius: 50%; display: none; }
-        .btn-yellow { background: var(--main-yellow); border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+        /* Bottom Nav */
+        nav { display: flex; justify-content: space-around; background: white; padding: 12px 0; border-top: 2px solid var(--main-yellow); position: fixed; bottom: 0; width: 100%; z-index: 1000; }
+        nav button { background: none; border: none; font-weight: bold; cursor: pointer; color: var(--gray); font-size: 16px; }
+        nav button.active { color: #000; border-bottom: 2px solid var(--main-yellow); }
+
+        .btn-yellow { background: var(--main-yellow); border: none; padding: 12px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-yellow:hover { transform: scale(1.02); }
+        
+        #profileHeader { text-align: center; background: var(--main-yellow); padding: 20px; border-radius: 15px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -52,69 +47,41 @@
 
 <div class="container">
     <div id="authSection" class="card">
-        <button class="btn-yellow" onclick="login()" style="width:100%">Enter the Hive</button>
+        <button class="btn-yellow" onclick="login()" style="width:100%">Log in with Google to Post</button>
     </div>
 
-    <div id="homeView" class="tab-view">
-        <div id="postArea" class="card hidden">
-            <textarea id="postInput" placeholder="Anong buzz natin?" style="width:100%; border:none; outline:none; resize:none; font-size:16px; min-height:50px;"></textarea>
-            <div id="imagePreviewContainer" class="hidden"><img id="postImagePreview" style="width:100%; border-radius:10px; margin-bottom:10px;"></div>
-            <div style="display:flex; justify-content: space-between; align-items: center;">
-                <label for="postImageUpload" style="cursor:pointer; font-weight:bold; font-size:20px;">📷</label>
-                <input type="file" id="postImageUpload" accept="image/*" style="display:none;">
-                <button class="btn-yellow" id="postBtn">Buzz It!</button>
-            </div>
-        </div>
-        <div id="feed"></div>
+    <div id="usernameSetup" class="card hidden">
+        <h3>Welcome to the Hive! 🍯</h3>
+        <p>Choose a unique username:</p>
+        <input type="text" id="usernameInput" placeholder="username_ko" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
+        <button class="btn-yellow" id="saveUsernameBtn" style="width:100%">Claim Username</button>
     </div>
 
-    <div id="notifView" class="tab-view hidden">
-        <div class="card">
-            <h3>Notifications 🔔</h3>
-            <div id="notifList"></div>
-        </div>
+    <div id="profileHeader" class="hidden">
+        <h2 id="viewingUser">@username</h2>
+        <p>User Feed</p>
     </div>
 
-    <div id="msgView" class="tab-view hidden">
-        <div class="card">
-            <h3 id="chatTitle">Messenger 💬</h3>
-            <div id="chatRoomArea" class="hidden">
-                <div id="chatMessages" style="height:350px; overflow-y:auto; display:flex; flex-direction:column; padding:10px; background:#fafafa; border-radius:10px; margin-bottom:10px;"></div>
-                <div style="display:flex; gap:5px;">
-                    <input type="text" id="chatInput" placeholder="Type a message..." style="flex:1; border:1px solid #ddd; padding:10px; border-radius:10px;">
-                    <button class="btn-yellow" id="sendMsgBtn">Send</button>
-                </div>
-            </div>
-            <p id="noChatMsg" style="text-align:center; color:#888;">Visit a profile to start chatting!</p>
-        </div>
+    <div id="postArea" class="card hidden">
+        <textarea id="postInput" placeholder="Anong buzzzz mo ngayon?" style="width:100%; border:none; outline:none; resize:none; font-size:16px; min-height:60px;"></textarea>
+        <button class="btn-yellow" id="postBtn" style="float:right; padding: 8px 20px;">Buzz It!</button>
+        <div style="clear:both"></div>
     </div>
 
-    <div id="profileView" class="tab-view hidden">
-        <div class="card" style="text-align:center">
-            <img id="p-pic" class="profile-pic" style="width:90px; height:90px;">
-            <h2 id="p-user" style="margin:10px 0;">@username</h2>
-            <div id="profileActions" style="margin-bottom:15px;">
-                <button id="followBtn" class="btn-yellow">Follow</button>
-                <button id="dmBtn" class="btn-yellow" style="background:#eee">Message</button>
-            </div>
-            <div id="userFeed"></div>
-        </div>
-    </div>
+    <div id="feed"></div>
 </div>
 
 <nav id="bottomNav" class="hidden">
-    <button id="navHome" onclick="switchView('home')" class="active">🏠</button>
-    <button id="navNotif" onclick="switchView('notif')">🔔<div id="notifDot" class="badge-dot"></div></button>
-    <button id="navMsg" onclick="switchView('msg')">💬</button>
-    <button id="navProfile" onclick="viewProfile(currentUsername)">👤</button>
+    <button id="navHome" class="active">🏠 Home</button>
+    <button id="navProfile">👤 Profile</button>
 </nav>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, doc, getDoc, setDoc, where, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, doc, getDoc, setDoc, deleteDoc, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
   import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
+  // --- IYONG FIREBASE CONFIG ---
   const firebaseConfig = {
     apiKey: "AIzaSyD7d5ShdJ6djY3V5mDinsiCYZcUnBGTQpk",
     authDomain: "mobuzzz-ce112.firebaseapp.com",
@@ -128,88 +95,115 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const auth = getAuth(app);
-  const storage = getStorage(app);
   const provider = new GoogleAuthProvider();
 
   let currentUser = null;
   let currentUsername = "";
-  let currentProfilePic = "";
-  let activeChatId = null;
+  let unsubscribeFeed = null;
 
-  // VERIFIED BADGE LIST
-  const verifiedList = ["dugzhak", "arnold23", "admin"]; 
-  const getBadge = (user) => verifiedList.includes(user) ? '<span class="verified-badge">✔</span>' : '';
+  // Login
+  window.login = () => signInWithPopup(auth, provider).catch(e => console.log("Login Cancelled"));
 
-  window.login = () => signInWithPopup(auth, provider);
+  // Time Formatter
+  const timeAgo = (timestamp) => {
+    if (!timestamp) return "Just now";
+    const seconds = Math.floor((new Date() - timestamp.toDate()) / 1000);
+    if (seconds < 60) return "Just now";
+    const mins = Math.floor(seconds / 60);
+    if (mins < 60) return mins + "m ago";
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return hours + "h ago";
+    return Math.floor(hours / 24) + "d ago";
+  };
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       currentUser = user;
       document.getElementById('authSection').classList.add('hidden');
-      const uSnap = await getDoc(doc(db, "users", user.uid));
-      if (uSnap.exists()) {
-        currentUsername = uSnap.data().username;
-        currentProfilePic = uSnap.data().photo || user.photoURL;
+      const userSnap = await getDoc(doc(db, "users", user.uid));
+      if (userSnap.exists()) {
+        currentUsername = userSnap.data().username;
         startApp();
       } else {
-        const name = prompt("Choose unique username:");
-        if (name) {
-          await setDoc(doc(db, "usernames", name.toLowerCase()), { uid: user.uid });
-          await setDoc(doc(db, "users", user.uid), { username: name.toLowerCase(), photo: user.photoURL });
-          location.reload();
-        }
+        document.getElementById('usernameSetup').classList.remove('hidden');
       }
     }
   });
 
-  function startApp() {
-    document.getElementById('bottomNav').classList.remove('hidden');
-    document.getElementById('postArea').classList.remove('hidden');
-    loadFeed();
-    listenNotifs();
-  }
+  document.getElementById('saveUsernameBtn').onclick = async () => {
+    const input = document.getElementById('usernameInput').value.trim().toLowerCase();
+    if (input.length < 3) return alert("Masyadong maikli!");
+    
+    const nameRef = doc(db, "usernames", input);
+    const nameSnap = await getDoc(nameRef);
 
-  // --- DELETE POST LOGIC ---
-  window.deletePost = async (id) => {
-    if (confirm("Gusto mo bang burahin ang post na ito?")) {
-        await deleteDoc(doc(db, "posts", id));
+    if (nameSnap.exists()) {
+      alert("Username taken! ❌");
+    } else {
+      await setDoc(doc(db, "usernames", input), { uid: currentUser.uid });
+      await setDoc(doc(db, "users", currentUser.uid), { username: input });
+      currentUsername = input;
+      startApp();
     }
   };
 
-  // --- FEED WITH DELETE BUTTON ---
-  function loadFeed() {
-    const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
-    onSnapshot(q, s => {
+  function startApp() {
+    document.getElementById('usernameSetup').classList.add('hidden');
+    document.getElementById('bottomNav').classList.remove('hidden');
+    document.getElementById('postArea').classList.remove('hidden');
+    loadFeed();
+  }
+
+  // Navigation
+  document.getElementById('navHome').onclick = () => {
+    switchTab('home');
+    loadFeed();
+  };
+  document.getElementById('navProfile').onclick = () => {
+    switchTab('profile');
+    loadFeed(currentUsername);
+  };
+
+  function switchTab(tab) {
+    document.getElementById('navHome').classList.toggle('active', tab === 'home');
+    document.getElementById('navProfile').classList.toggle('active', tab === 'profile');
+    document.getElementById('profileHeader').classList.toggle('hidden', tab !== 'profile');
+    document.getElementById('viewingUser').innerText = "@" + currentUsername;
+    document.getElementById('postArea').classList.toggle('hidden', tab !== 'home');
+  }
+
+  function loadFeed(filterUser = null) {
+    if (unsubscribeFeed) unsubscribeFeed();
+    
+    let q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+    if (filterUser) {
+      q = query(collection(db, "posts"), where("user", "==", filterUser), orderBy("timestamp", "desc"));
+    }
+
+    unsubscribeFeed = onSnapshot(q, (snapshot) => {
       const feed = document.getElementById('feed');
       feed.innerHTML = "";
-      s.forEach(postDoc => {
-        const d = postDoc.data();
+      snapshot.forEach(postDoc => {
+        const data = postDoc.data();
         const id = postDoc.id;
-        
-        // Check owner for Delete Button
-        const deleteBtn = (currentUser && d.uid === currentUser.uid) 
-            ? `<button class="btn-delete" onclick="deletePost('${id}')">🗑️</button>` 
-            : '';
-
         const postDiv = document.createElement('div');
         postDiv.className = 'post';
         postDiv.innerHTML = `
-          ${deleteBtn}
           <div class="post-header">
-            <img src="${d.userPhoto}" class="profile-pic" onclick="viewProfile('${d.user}')">
-            <b onclick="viewProfile('${d.user}')">@${d.user}${getBadge(d.user)}</b>
+            <span class="user-info" onclick="viewUser('${data.user}')">@${data.user}</span>
+            <span class="post-time">${timeAgo(data.timestamp)}</span>
           </div>
-          <div style="white-space: pre-wrap;">${d.content}</div>
-          ${d.postImage ? `<img class="post-img" src="${d.postImage}">` : ''}
+          <div class="post-content">${data.content}</div>
           <div class="action-bar">
-            <button class="action-btn" onclick="like('${id}', '${d.user}')">❤️ <span id="l-${id}">0</span></button>
+            <button class="action-btn" onclick="like('${id}')">❤️ <span id="l-${id}">0</span></button>
             <button class="action-btn" onclick="document.getElementById('c-sec-${id}').classList.toggle('hidden')">💬 <span id="cc-${id}">0</span></button>
+            <button class="action-btn" onclick="share('${id}')">🔗 Share</button>
           </div>
           <div id="c-sec-${id}" class="comment-section hidden">
             <div id="c-list-${id}"></div>
-            <div style="display:flex; gap:5px; margin-top:10px;">
-              <input type="text" id="c-in-${id}" placeholder="Write a comment..." style="flex:1; padding:5px; border-radius:10px; border:1px solid #ddd;">
-              <button onclick="addComment('${id}', '${d.user}')">➤</button>
+            <div class="comment-input-box">
+              <input type="text" id="c-in-${id}" class="comment-input" placeholder="Comment...">
+              <button onclick="addComment('${id}')">send</button>
             </div>
           </div>
         `;
@@ -219,24 +213,11 @@
     });
   }
 
-  // --- SOCIAL INTERACTIONS ---
-  window.like = async (id, targetUser) => {
-    const lRef = doc(db, "posts", id, "likes", currentUser.uid);
-    const snap = await getDoc(lRef);
-    if (snap.exists()) {
-        await deleteDoc(lRef);
-    } else {
-        await setDoc(lRef, { u: currentUsername });
-        pushNotif(targetUser, "liked your buzz! ❤️");
-    }
-  };
-
-  window.addComment = async (id, targetUser) => {
-    const val = document.getElementById(`c-in-${id}`).value;
-    if (!val.trim()) return;
-    await addDoc(collection(db, "posts", id, "comments"), { text: val, user: currentUsername, timestamp: serverTimestamp() });
-    document.getElementById(`c-in-${id}`).value = "";
-    pushNotif(targetUser, "commented: " + val);
+  window.viewUser = (username) => {
+    document.getElementById('profileHeader').classList.remove('hidden');
+    document.getElementById('viewingUser').innerText = "@" + username;
+    document.getElementById('postArea').classList.add('hidden');
+    loadFeed(username);
   };
 
   function initInteractions(postId) {
@@ -249,104 +230,28 @@
     });
   }
 
-  async function pushNotif(username, msg) {
-    const uSnap = await getDocs(query(collection(db, "users"), where("username", "==", username)));
-    uSnap.forEach(async d => {
-        if (d.id !== currentUser.uid) {
-            await addDoc(collection(db, d.id, "notifs"), { from: currentUsername, msg: msg, time: serverTimestamp() });
-        }
-    });
-  }
-
-  function listenNotifs() {
-    onSnapshot(query(collection(db, currentUser.uid, "notifs"), orderBy("time", "desc")), s => {
-      const list = document.getElementById('notifList');
-      list.innerHTML = "";
-      if (!s.empty) document.getElementById('notifDot').style.display = 'block';
-      s.forEach(d => list.innerHTML += `<div class="notif-item">🔥 <b>@${d.data().from}</b> ${d.data().msg}</div>`);
-    });
-  }
-
-  // --- PROFILE & MESSENGER ---
-  window.viewProfile = async (un) => {
-    switchView('profile');
-    const uSnap = await getDocs(query(collection(db, "users"), where("username", "==", un)));
-    uSnap.forEach(d => {
-        document.getElementById('p-user').innerHTML = "@" + un + getBadge(un);
-        document.getElementById('p-pic').src = d.data().photo;
-        document.getElementById('profileActions').classList.toggle('hidden', un === currentUsername);
-        document.getElementById('followBtn').onclick = () => { pushNotif(un, "followed you!"); alert("You are now following @"+un); };
-        document.getElementById('dmBtn').onclick = () => startChat(d.id, un);
-    });
-  }
-
-  async function startChat(targetUid, targetName) {
-    switchView('msg');
-    document.getElementById('noChatMsg').classList.add('hidden');
-    document.getElementById('chatRoomArea').classList.remove('hidden');
-    document.getElementById('chatTitle').innerText = "Chat w/ @" + targetName;
-    activeChatId = [currentUser.uid, targetUid].sort().join("_");
-    onSnapshot(query(collection(db, "chats", activeChatId, "messages"), orderBy("time", "asc")), s => {
-        const box = document.getElementById('chatMessages'); box.innerHTML = "";
-        s.forEach(m => {
-            const isMe = m.data().sender === currentUser.uid;
-            box.innerHTML += `<div class="bubble ${isMe ? 'bubble-me' : 'bubble-them'}">${m.data().text}</div>`;
-        });
-        box.scrollTop = box.scrollHeight;
-    });
-  }
-
-  document.getElementById('sendMsgBtn').onclick = async () => {
-    const input = document.getElementById('chatInput');
-    if (!input.value.trim() || !activeChatId) return;
-    await addDoc(collection(db, "chats", activeChatId, "messages"), { text: input.value, sender: currentUser.uid, time: serverTimestamp() });
-    input.value = "";
+  window.like = async (id) => {
+    const lRef = doc(db, "posts", id, "likes", currentUser.uid);
+    (await getDoc(lRef)).exists() ? await deleteDoc(lRef) : await setDoc(lRef, { u: currentUsername });
   };
 
-  // --- NAV ---
-  window.switchView = (v) => {
-    document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
-    document.getElementById(v + 'View').classList.remove('hidden');
-    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-    document.getElementById('nav' + v.charAt(0).toUpperCase() + v.slice(1)).classList.add('active');
-    if (v === 'notif') document.getElementById('notifDot').style.display = 'none';
-  }
+  window.addComment = async (id) => {
+    const val = document.getElementById(`c-in-${id}`).value;
+    if (!val.trim()) return;
+    await addDoc(collection(db, "posts", id, "comments"), { text: val, user: currentUsername, timestamp: serverTimestamp() });
+    document.getElementById(`c-in-${id}`).value = "";
+  };
 
-  // --- POSTING ---
+  window.share = (id) => {
+    navigator.clipboard.writeText(window.location.origin + "?p=" + id);
+    alert("Link copied! 🔗");
+  };
+
   document.getElementById('postBtn').onclick = async () => {
-    const text = document.getElementById('postInput').value;
-    const file = document.getElementById('postImageUpload').files[0];
-    if (!text.trim() && !file) return;
-
-    let imageUrl = "";
-    if (file) {
-      try {
-        const sRef = ref(storage, `posts/${Date.now()}`);
-        await uploadBytes(sRef, file);
-        imageUrl = await getDownloadURL(sRef);
-      } catch (e) { console.log("Storage error (check rules/billing)"); }
-    }
-    
-    await addDoc(collection(db, "posts"), { 
-        content: text, 
-        user: currentUsername, 
-        userPhoto: currentProfilePic, 
-        postImage: imageUrl, 
-        uid: currentUser.uid, 
-        timestamp: serverTimestamp() 
-    });
+    const val = document.getElementById('postInput').value;
+    if (!val.trim()) return;
+    await addDoc(collection(db, "posts"), { content: val, user: currentUsername, timestamp: serverTimestamp() });
     document.getElementById('postInput').value = "";
-    document.getElementById('postImageUpload').value = "";
-    document.getElementById('imagePreviewContainer').classList.add('hidden');
-  };
-
-  // Image Preview Logic
-  document.getElementById('postImageUpload').onchange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-          document.getElementById('postImagePreview').src = URL.createObjectURL(file);
-          document.getElementById('imagePreviewContainer').classList.remove('hidden');
-      }
   };
 </script>
 </body>
