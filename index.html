@@ -3,27 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobuzzz - Media Update</title>
+    <title>Mobuzzz - Power User</title>
     <style>
-        :root { --main-yellow: #FFD700; --bg: #FFFDF0; --gray: #888; }
+        :root { --main-yellow: #FFD700; --bg: #FFFDF0; --gray: #888; --danger: #ff4757; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; }
         header { background: var(--main-yellow); padding: 15px; text-align: center; font-size: 24px; font-weight: bold; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .container { padding: 15px; max-width: 500px; margin: 0 auto; }
         .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
         .hidden { display: none; }
 
-        /* Post & Profile Styling */
-        .post { background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .profile-pic { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--main-yellow); }
-        .post-img { width: 100%; border-radius: 10px; margin-top: 10px; display: block; }
-        
-        /* Inputs */
-        input[type="file"] { display: none; }
-        .file-label { display: inline-block; padding: 8px 12px; background: #f0f0f0; border-radius: 10px; cursor: pointer; font-size: 14px; margin-top: 5px; }
-        .btn-yellow { background: var(--main-yellow); border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+        /* Search Bar */
+        #searchBar { margin-bottom: 15px; display: flex; gap: 10px; }
+        #searchBar input { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ddd; outline: none; }
 
-        /* Bottom Nav */
+        /* Post Styling */
+        .post { background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #eee; position: relative; }
+        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .profile-pic { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .user-info { font-weight: bold; cursor: pointer; }
+        .post-time { font-size: 11px; color: var(--gray); }
+        .btn-delete { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #ccc; cursor: pointer; font-size: 18px; }
+        .btn-delete:hover { color: var(--danger); }
+
+        /* Profile Page */
+        #profileHeader { text-align: center; padding: 20px; background: var(--main-yellow); border-radius: 15px; margin-bottom: 20px; }
+        .bio-text { font-size: 14px; color: #444; margin: 10px 0; font-style: italic; }
+        .stats { display: flex; justify-content: center; gap: 20px; font-weight: bold; margin-top: 10px; }
+
+        /* General UI */
+        .btn-yellow { background: var(--main-yellow); border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
         nav { display: flex; justify-content: space-around; background: white; padding: 12px 0; border-top: 2px solid var(--main-yellow); position: fixed; bottom: 0; width: 100%; z-index: 1000; }
         nav button { background: none; border: none; font-weight: bold; cursor: pointer; color: var(--gray); font-size: 16px; }
         nav button.active { color: #000; border-bottom: 2px solid var(--main-yellow); }
@@ -35,34 +43,35 @@
 
 <div class="container">
     <div id="authSection" class="card">
-        <button class="btn-yellow" onclick="login()" style="width:100%">Log in with Google</button>
+        <button class="btn-yellow" onclick="login()" style="width:100%">Login with Google</button>
     </div>
 
-    <div id="usernameSetup" class="card hidden">
-        <h3>Complete Your Profile 🍯</h3>
-        <div style="text-align: center; margin-bottom: 15px;">
-            <img id="setupPreview" src="https://via.placeholder.com/100" class="profile-pic" style="width:80px; height:80px;">
-            <br>
-            <label class="file-label" for="profileUpload">Choose Profile Picture</label>
-            <input type="file" id="profileUpload" accept="image/*">
+    <div id="homeTab">
+        <div id="searchBar" class="hidden">
+            <input type="text" id="searchInput" placeholder="Search username...">
+            <button class="btn-yellow" onclick="searchUser()">Find</button>
         </div>
-        <input type="text" id="usernameInput" placeholder="username_ko" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
-        <button class="btn-yellow" id="saveUsernameBtn" style="width:100%">Join the Hive</button>
+
+        <div id="postArea" class="card hidden">
+            <textarea id="postInput" placeholder="Anong buzz mo?" style="width:100%; border:none; outline:none; resize:none; font-size:16px; min-height:50px;"></textarea>
+            <button class="btn-yellow" id="postBtn" style="float:right">Buzz It!</button>
+            <div style="clear:both"></div>
+        </div>
+        <div id="feed"></div>
     </div>
 
-    <div id="postArea" class="card hidden">
-        <textarea id="postInput" placeholder="What's the buzz?" style="width:100%; border:none; outline:none; resize:none; font-size:16px; min-height:50px;"></textarea>
-        <div id="imagePreviewContainer" class="hidden">
-            <img id="postImagePreview" style="width:100%; border-radius:10px; margin-bottom:10px;">
+    <div id="profileTab" class="hidden">
+        <div id="profileHeader">
+            <img id="p-pic" class="profile-pic" style="width:80px; height:80px;" src="">
+            <h2 id="p-user" style="margin:10px 0 5px 0;">@username</h2>
+            <div id="p-bio" class="bio-text">No bio yet.</div>
+            <button id="editBioBtn" style="font-size:11px; background:none; border:1px solid #555; border-radius:10px; padding:2px 10px; cursor:pointer;">Edit Bio</button>
+            <div class="stats">
+                <div id="postCount">0 Posts</div>
+            </div>
         </div>
-        <div style="display:flex; justify-content: space-between; align-items: center;">
-            <label class="file-label" for="postImageUpload">📸 Add Photo</label>
-            <input type="file" id="postImageUpload" accept="image/*">
-            <button class="btn-yellow" id="postBtn">Buzz It!</button>
-        </div>
+        <div id="userFeed"></div>
     </div>
-
-    <div id="feed"></div>
 </div>
 
 <nav id="bottomNav" class="hidden">
@@ -72,11 +81,9 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, doc, getDoc, setDoc, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, doc, getDoc, setDoc, deleteDoc, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
   import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
-  // PASTE YOUR CONFIG HERE
   const firebaseConfig = {
     apiKey: "AIzaSyD7d5ShdJ6djY3V5mDinsiCYZcUnBGTQpk",
     authDomain: "mobuzzz-ce112.firebaseapp.com",
@@ -90,12 +97,10 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const auth = getAuth(app);
-  const storage = getStorage(app);
   const provider = new GoogleAuthProvider();
 
   let currentUser = null;
   let currentUsername = "";
-  let currentProfilePic = "";
 
   window.login = () => signInWithPopup(auth, provider);
 
@@ -106,87 +111,45 @@
       const userSnap = await getDoc(doc(db, "users", user.uid));
       if (userSnap.exists()) {
         currentUsername = userSnap.data().username;
-        currentProfilePic = userSnap.data().photo || user.photoURL;
         startApp();
       } else {
-        document.getElementById('usernameSetup').classList.remove('hidden');
-        document.getElementById('setupPreview').src = user.photoURL;
+        // Simple registration redirect if no username
+        const name = prompt("Choose a unique username:");
+        if (name) {
+          await setDoc(doc(db, "usernames", name.toLowerCase()), { uid: user.uid });
+          await setDoc(doc(db, "users", user.uid), { username: name.toLowerCase(), bio: "Buzzzing here!", photo: user.photoURL });
+          location.reload();
+        }
       }
     }
   });
 
-  // Profile Pic Preview & Setup
-  const profileUpload = document.getElementById('profileUpload');
-  profileUpload.onchange = (e) => {
-    const file = e.target.files[0];
-    if (file) document.getElementById('setupPreview').src = URL.createObjectURL(file);
-  };
-
-  document.getElementById('saveUsernameBtn').onclick = async () => {
-    const input = document.getElementById('usernameInput').value.trim().toLowerCase();
-    const file = profileUpload.files[0];
-    if (input.length < 3) return alert("Too short!");
-
-    let photoURL = currentUser.photoURL;
-    if (file) {
-      const sRef = ref(storage, `profiles/${currentUser.uid}`);
-      await uploadBytes(sRef, file);
-      photoURL = await getDownloadURL(sRef);
-    }
-
-    await setDoc(doc(db, "usernames", input), { uid: currentUser.uid });
-    await setDoc(doc(db, "users", currentUser.uid), { username: input, photo: photoURL });
-    currentUsername = input;
-    currentProfilePic = photoURL;
-    startApp();
-  };
-
-  // Post Image Preview
-  const postImageUpload = document.getElementById('postImageUpload');
-  postImageUpload.onchange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      document.getElementById('postImagePreview').src = URL.createObjectURL(file);
-      document.getElementById('imagePreviewContainer').classList.remove('hidden');
-    }
-  };
-
-  // BUZZ IT (Post Logic with Image)
-  document.getElementById('postBtn').onclick = async () => {
-    const text = document.getElementById('postInput').value;
-    const file = postImageUpload.files[0];
-    if (!text.trim() && !file) return;
-
-    let imageUrl = "";
-    document.getElementById('postBtn').innerText = "Uploading...";
-
-    if (file) {
-      const sRef = ref(storage, `posts/${Date.now()}_${file.name}`);
-      await uploadBytes(sRef, file);
-      imageUrl = await getDownloadURL(sRef);
-    }
-
-    await addDoc(collection(db, "posts"), {
-      content: text,
-      user: currentUsername,
-      userPhoto: currentProfilePic,
-      postImage: imageUrl,
-      timestamp: serverTimestamp()
-    });
-
-    document.getElementById('postInput').value = "";
-    document.getElementById('postBtn').innerText = "Buzz It!";
-    document.getElementById('imagePreviewContainer').classList.add('hidden');
-    postImageUpload.value = "";
-  };
-
   function startApp() {
-    document.getElementById('usernameSetup').classList.add('hidden');
     document.getElementById('bottomNav').classList.remove('hidden');
     document.getElementById('postArea').classList.remove('hidden');
+    document.getElementById('searchBar').classList.remove('hidden');
     loadFeed();
   }
 
+  // --- DELETE LOGIC ---
+  window.deletePost = async (id) => {
+    if (confirm("Gusto mo ba talagang burahin itong buzz?")) {
+      await deleteDoc(doc(db, "posts", id));
+    }
+  };
+
+  // --- SEARCH LOGIC ---
+  window.searchUser = () => {
+    const term = document.getElementById('searchInput').value.trim().toLowerCase();
+    if (term) viewUser(term);
+  };
+
+  window.viewUser = (username) => {
+    switchTab('profile');
+    loadProfile(username);
+  };
+
+  // --- FEED & PROFILE LOGIC ---
   function loadFeed() {
     const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
     onSnapshot(q, (snapshot) => {
@@ -194,19 +157,73 @@
       feed.innerHTML = "";
       snapshot.forEach(postDoc => {
         const data = postDoc.data();
+        const id = postDoc.id;
         feed.innerHTML += `
           <div class="post">
+            ${data.user === currentUsername ? `<button class="btn-delete" onclick="deletePost('${id}')">×</button>` : ''}
             <div class="post-header">
-              <img class="profile-pic" src="${data.userPhoto || 'https://via.placeholder.com/45'}">
-              <b>@${data.user}</b>
+                <img class="profile-pic" src="${data.photo || 'https://via.placeholder.com/40'}">
+                <span class="user-info" onclick="viewUser('${data.user}')">@${data.user}</span>
             </div>
             <div>${data.content}</div>
-            ${data.postImage ? `<img class="post-img" src="${data.postImage}">` : ''}
-          </div>
-        `;
+          </div>`;
       });
     });
   }
+
+  async function loadProfile(username) {
+    const q = query(collection(db, "posts"), where("user", "==", username), orderBy("timestamp", "desc"));
+    const snap = await getDocs(q);
+    document.getElementById('postCount').innerText = snap.size + " Posts";
+    document.getElementById('p-user').innerText = "@" + username;
+    
+    // Fetch Bio from users collection
+    const uQ = query(collection(db, "users"), where("username", "==", username));
+    const uSnap = await getDocs(uQ);
+    uSnap.forEach(d => {
+        document.getElementById('p-bio').innerText = d.data().bio || "No bio yet.";
+        document.getElementById('p-pic').src = d.data().photo || "";
+    });
+
+    const uFeed = document.getElementById('userFeed');
+    uFeed.innerHTML = "";
+    snap.forEach(d => uFeed.innerHTML += `<div class="post"><div>${d.data().content}</div></div>`);
+    
+    document.getElementById('editBioBtn').classList.toggle('hidden', username !== currentUsername);
+  }
+
+  // Edit Bio
+  document.getElementById('editBioBtn').onclick = async () => {
+    const newBio = prompt("Anong bio mo?");
+    if (newBio) {
+        await setDoc(doc(db, "users", currentUser.uid), { bio: newBio }, { merge: true });
+        loadProfile(currentUsername);
+    }
+  };
+
+  // Navigation
+  function switchTab(tab) {
+    document.getElementById('homeTab').classList.toggle('hidden', tab !== 'home');
+    document.getElementById('profileTab').classList.toggle('hidden', tab !== 'profile');
+    document.getElementById('navHome').classList.toggle('active', tab === 'home');
+    document.getElementById('navProfile').classList.toggle('active', tab === 'profile');
+  }
+
+  document.getElementById('navHome').onclick = () => switchTab('home');
+  document.getElementById('navProfile').onclick = () => { switchTab('profile'); loadProfile(currentUsername); };
+
+  // Post Button
+  document.getElementById('postBtn').onclick = async () => {
+    const val = document.getElementById('postInput').value;
+    if (!val.trim()) return;
+    await addDoc(collection(db, "posts"), { 
+        content: val, 
+        user: currentUsername, 
+        photo: currentUser.photoURL,
+        timestamp: serverTimestamp() 
+    });
+    document.getElementById('postInput').value = "";
+  };
 </script>
 </body>
 </html>
