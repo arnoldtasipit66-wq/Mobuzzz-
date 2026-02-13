@@ -1,14 +1,12 @@
 {
   "name": "Mobuzzz Empire",
   "short_name": "Mobuzzz",
-  "description": "The buzziest social network hive for friends.",
+  "description": "The buzziest social network hive.",
   "start_url": "/",
-  "display": "standalone",
+  "display": "standalone",  <-- IMPORTANTE ITO
   "background_color": "#FFFDF0",
   "theme_color": "#FFD700",
   "orientation": "portrait",
-  "scope": "/",
-  "lang": "en",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/2504/2504929.png",
