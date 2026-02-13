@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobuzzz - Pro Edition</title>
+    <style>
+        :root { --main-yellow: #FFD700; --bg: #FFFDF0; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        header { background: var(--main-yellow); padding: 15px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        /* Auth Section */
+        .auth-container { text-align: center; margin-bottom: 20px; }
+        #loginBtn { background: white; border: 2px solid #4285F4; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+        /* Post Box (Hidden by default) */
+        #postArea { display: none; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto 30px; border: 2px solid var(--main-yellow); }
+        textarea { width: 100%; height: 80px; border: none; outline: none; resize: none; font-size: 16px; margin-bottom: 10px; font-family: inherit; }
+        .btn-post { background: var(--main-yellow); border: none; padding: 10px 25px; border-radius: 20px; font-weight: bold; cursor: pointer; float: right; }
+        .clearfix::after { content: ""; clear: both; display: table; }
+
+        #feed { max-width: 500px; margin: 0 auto; }
+        .post { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 6px solid var(--main-yellow); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .user-tag { color: #555; font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block; }
+    </style>
+</head>
+<body>
+
+<header>🐝 Mobuzzz</header>
+
+<div class="auth-container">
+    <button id="loginBtn">Log in with Google to Post</button>
+    <p id="userWelcome"></p>
+</div>
+
+<div id="postArea" class="clearfix">
+    <textarea id="postInput" placeholder="Ano ang buzzzz mo ngayon?"></textarea>
+    <button class="btn-post" id="postBtn">Post to Hive</button>
+</div>
+
+<div id="feed"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD7d5ShdJ6djY3V5mDinsiCYZcUnBGTQpk",
+    authDomain: "mobuzzz-ce112.firebaseapp.com",
+    projectId: "mobuzzz-ce112",
+    storageBucket: "mobuzzz-ce112.firebasestorage.app",
+    messagingSenderId: "1033041132259",
+    appId: "1:1033041132259:web:df28b71b2d641a697923d6",
+    measurementId: "G-Q7MJMFRDQF"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  let currentUser = null;
+
+  // Login Logic
+  document.getElementById('loginBtn').onclick = () => {
+    signInWithPopup(auth, provider).catch(error => console.log(error));
+  };
+
+  // Auth State Listener
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      currentUser = user;
+      document.getElementById('loginBtn').style.display = 'none';
+      document.getElementById('postArea').style.display = 'block';
+      document.getElementById('userWelcome').innerText = "Buzzzing as: " + user.displayName;
+    }
+  });
+
+  // Post Logic
+  document.getElementById('postBtn').onclick = async () => {
+    const text = document.getElementById('postInput').value;
+    if (text.trim() === "" || !currentUser) return;
+
+    await addDoc(collection(db, "posts"), {
+      content: text,
+      timestamp: serverTimestamp(),
+      user: currentUser.displayName,
+      photo: currentUser.photoURL
+    });
+    document.getElementById('postInput').value = "";
+  };
+
+  // Feed Logic
+  const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+  onSnapshot(q, (snapshot) => {
+    const feed = document.getElementById('feed');
+    feed.innerHTML = "";
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      feed.innerHTML += `
+        <div class="post">
+            <span class="user-tag">@${data.user}</span>
+            <p>${data.content}</p>
+        </div>
+      `;
+    });
+  });
+</script>
+
+</body>
+</html>
