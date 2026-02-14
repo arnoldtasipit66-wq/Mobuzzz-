@@ -37,8 +37,20 @@
         .red-dot { width: 10px; height: 10px; background: #ff4444; border-radius: 50%; position: absolute; top: 5px; right: 25%; border: 2px solid white; display: none; }
         .red-dot.visible { display: block; }
 
-        /* GAME FRAME */
-        .game-frame { width: 100%; height: calc(100vh - 140px); border: none; border-radius: 12px; background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        /* GAME ROTATION FIX (FULLSCREEN LANDSCAPE) */
+        .game-wrapper {
+            position: fixed; top: 70px; left: 0; width: 100vw; height: calc(100vh - 140px);
+            background: #000; overflow: hidden; display: flex; justify-content: center; align-items: center;
+        }
+        .game-frame {
+            width: 75vh; height: 100vw; /* Swap dimensions for rotation */
+            transform: rotate(90deg); transform-origin: center;
+            border: none; position: absolute;
+        }
+        .rotate-hint {
+            position: absolute; color: white; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 20px;
+            z-index: 10; pointer-events: none; animation: fadeOut 4s forwards;
+        }
 
         /* BOTTOM NAV */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--white); display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000; border-top: 1px solid #eee; }
@@ -49,14 +61,14 @@
         /* FAB */
         .fab { position: fixed; bottom: 85px; right: 20px; background: var(--primary); color: #000; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4); cursor: pointer; z-index: 900; border: none; font-weight: bold; }
 
-        /* MODALS */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: flex-end; }
+        /* MODALS (UPDATED FOR CLICK OUTSIDE) */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: flex-end; }
         .modal-content { background: white; width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; padding: 20px; animation: slideUp 0.3s ease; max-height: 80vh; overflow-y: auto; display: flex; flex-direction: column; }
         
         /* COMMENTS */
-        .comment-list { flex: 1; overflow-y: auto; margin-bottom: 10px; max-height: 300px; }
+        .comment-list { flex: 1; overflow-y: auto; margin-bottom: 10px; max-height: 40vh; }
         .comment-item { display: flex; gap: 10px; margin-bottom: 10px; font-size: 14px; }
-        .comment-avatar { width: 30px; height: 30px; border-radius: 50%; }
+        .comment-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
 
         /* PROFILE */
         .profile-header { text-align: center; padding: 30px 20px; background: white; border-radius: 0 0 20px 20px; margin-bottom: 15px; }
@@ -67,6 +79,7 @@
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes fadeOut { 0% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
     </style>
 </head>
 <body>
@@ -82,10 +95,10 @@
     </div>
 
     <div id="view-games" class="view-section">
-        <h3 style="margin: 0 0 10px 0; display:flex; align-items:center; gap:10px;">
-            <span class="material-icons-round" style="color:var(--primary)">sports_esports</span> Pinoy Pool
-        </h3>
-        <iframe src="https://arnoldtasipit66-wq.github.io/my-game-assets/" class="game-frame" title="Pinoy Pool"></iframe>
+        <div class="game-wrapper">
+            <div class="rotate-hint"><span class="material-icons-round" style="vertical-align:middle; font-size:16px;">screen_rotation</span> Rotate phone</div>
+            <iframe src="https://arnoldtasipit66-wq.github.io/my-game-assets/" class="game-frame" title="Pinoy Pool"></iframe>
+        </div>
     </div>
 
     <div id="view-messages" class="view-section">
@@ -115,38 +128,39 @@
         <span class="material-icons-round">home</span>
     </button>
     <button class="nav-item" onclick="switchView('games')">
-        <span class="material-icons-round">sports_esports</span> </button>
+        <span class="material-icons-round">sports_esports</span>
+    </button>
     <button class="nav-item" onclick="switchView('messages')">
         <span class="material-icons-round">mail</span>
     </button>
     <button class="nav-item" onclick="switchView('notifications')">
         <span class="material-icons-round">notifications</span>
-        <span id="notif-badge" class="red-dot"></span> </button>
+        <span id="notif-badge" class="red-dot"></span>
+    </button>
     <button class="nav-item" onclick="switchView('profile')">
         <span class="material-icons-round">person</span>
     </button>
 </nav>
 
-<div id="postModal" class="modal">
-    <div class="modal-content">
+<div id="postModal" class="modal" onclick="closeModal(event, 'postModal')">
+    <div class="modal-content" onclick="event.stopPropagation()">
         <h3>Create Buzz</h3>
-        <textarea id="postInput" placeholder="What's buzzing?" style="width:100%; height:100px; border:1px solid #ddd; padding:10px; border-radius:10px;"></textarea>
+        <textarea id="postInput" placeholder="What's buzzing?" style="width:100%; height:100px; border:1px solid #ddd; padding:10px; border-radius:10px; box-sizing:border-box;"></textarea>
         <div style="text-align:right; margin-top:10px;">
-            <button onclick="closeModal('postModal')" style="margin-right:10px; background:none; border:none;">Cancel</button>
+            <button onclick="document.getElementById('postModal').style.display='none'" style="margin-right:10px; background:none; border:none;">Cancel</button>
             <button id="submitPostBtn" style="background:var(--primary); border:none; padding:8px 20px; border-radius:20px; font-weight:bold;">Post</button>
         </div>
     </div>
 </div>
 
-<div id="commentModal" class="modal">
-    <div class="modal-content" style="height: 60vh;">
-        <h3 style="margin-top:0;">Comments</h3>
+<div id="commentModal" class="modal" onclick="closeModal(event, 'commentModal')">
+    <div class="modal-content" style="height: 60vh;" onclick="event.stopPropagation()">
+        <div style="width:40px; height:4px; background:#eee; border-radius:2px; margin:0 auto 15px auto;"></div> <h3 style="margin-top:0;">Comments</h3>
         <div id="commentList" class="comment-list"></div>
-        <div style="display:flex; gap:10px;">
-            <input type="text" id="commentInput" placeholder="Write a reply..." style="flex:1; padding:10px; border-radius:20px; border:1px solid #ddd;">
-            <button id="sendCommentBtn" style="background:var(--primary); border:none; border-radius:50%; width:40px; height:40px; font-weight:bold;">➤</button>
+        <div style="display:flex; gap:10px; margin-top:auto;">
+            <input type="text" id="commentInput" placeholder="Write a reply..." style="flex:1; padding:10px; border-radius:20px; border:1px solid #ddd; outline:none;">
+            <button id="sendCommentBtn" style="background:var(--primary); border:none; border-radius:50%; width:40px; height:40px; font-weight:bold; cursor:pointer;">➤</button>
         </div>
-        <button onclick="closeModal('commentModal')" style="margin-top:10px; background:none; border:none; width:100%;">Close</button>
     </div>
 </div>
 
@@ -170,9 +184,8 @@
   enableIndexedDbPersistence(db).catch(err => console.log(err.code));
 
   let currentUser = null;
-  let activePostId = null;
 
-  // --- NAVIGATION ---
+  // --- NAVIGATION & MODALS ---
   window.switchView = (viewName) => {
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -184,7 +197,13 @@
     if(viewName === 'profile' && currentUser) loadProfile(currentUser.uid);
   };
 
-  window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+  // Logic: Only close if the background (the modal ID itself) is clicked
+  window.closeModal = (event, id) => {
+      if(event.target.id === id) {
+          document.getElementById(id).style.display = 'none';
+      }
+  };
+  
   document.getElementById('fabPost').onclick = () => currentUser ? document.getElementById('postModal').style.display = 'flex' : login();
 
   // --- AUTH ---
@@ -207,7 +226,7 @@
   document.getElementById('submitPostBtn').onclick = async () => {
       const text = document.getElementById('postInput').value;
       if(!text.trim()) return;
-      closeModal('postModal');
+      document.getElementById('postModal').style.display = 'none';
       await addDoc(collection(db, "posts"), {
           content: text, timestamp: serverTimestamp(), uid: currentUser.uid,
           authorName: currentUser.displayName, authorPhoto: currentUser.photoURL,
@@ -267,7 +286,6 @@
 
   // --- COMMENTS SYSTEM ---
   window.openComments = (postId, postOwnerId) => {
-      activePostId = postId;
       document.getElementById('commentModal').style.display = 'flex';
       
       const q = query(collection(db, `posts/${postId}/comments`), orderBy("timestamp", "asc"));
@@ -277,7 +295,7 @@
               const c = d.data();
               html += `<div class="comment-item">
                 <img src="${c.photo}" class="comment-avatar">
-                <div style="background:#f0f2f5; padding:8px 12px; border-radius:15px;">
+                <div style="background:#f0f2f5; padding:8px 12px; border-radius:15px; width:100%;">
                     <b>${c.user}</b> <br> ${c.text}
                 </div>
               </div>`;
@@ -285,8 +303,12 @@
           document.getElementById('commentList').innerHTML = html;
       });
   
-      // Send Comment Logic
-      document.getElementById('sendCommentBtn').onclick = async () => {
+      // Remove old listener to avoid duplicates (basic cleanup)
+      const oldBtn = document.getElementById('sendCommentBtn');
+      const newBtn = oldBtn.cloneNode(true);
+      oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+
+      newBtn.onclick = async () => {
           const txt = document.getElementById('commentInput').value;
           if(!txt.trim()) return;
           await addDoc(collection(db, `posts/${postId}/comments`), {
@@ -322,7 +344,6 @@
           });
           document.getElementById('notif-list').innerHTML = html;
           
-          // Toggle Red Dot
           const badge = document.getElementById('notif-badge');
           if(unreadCount > 0) badge.classList.add('visible');
           else badge.classList.remove('visible');
@@ -345,11 +366,9 @@
       if(!userSnap.exists()) return;
       const u = userSnap.data();
       
-      // Check Follow Status
       let isFollowing = false;
       let followerCount = 0;
       
-      // Get Followers Count
       const followersSnap = await getDocs(collection(db, `users/${targetUid}/followers`));
       followerCount = followersSnap.size;
       
@@ -384,9 +403,9 @@
           await deleteDoc(ref);
       } else {
           await setDoc(ref, { timestamp: serverTimestamp() });
-          sendNotif(targetUid, 'follow', null); // Send follow notif
+          sendNotif(targetUid, 'follow', null);
       }
-      loadProfile(targetUid); // Refresh UI
+      loadProfile(targetUid);
   };
 
   window.doLogout = () => signOut(auth).then(() => window.location.reload());
