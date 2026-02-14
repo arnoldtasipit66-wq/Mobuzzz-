@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mobuzzz Ultimate</title>
+    <title>Mobuzzz Pro + Games</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <style>
         :root { --primary: #FFD700; --bg: #f8f9fa; --text: #212529; --gray: #6c757d; --white: #ffffff; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; padding-bottom: 70px; /* Space for bottom nav */ }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; padding-bottom: 75px; overscroll-behavior: none; }
         
-        /* --- LAYOUT --- */
+        /* HEADER */
         header { background: var(--white); padding: 15px; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
         h1 { margin: 0; font-size: 20px; font-weight: 800; color: #000; letter-spacing: -0.5px; }
         .brand span { color: #f39c12; }
@@ -18,7 +18,7 @@
         .view-section { display: none; animation: fadeIn 0.2s ease-out; }
         .view-section.active { display: block; }
 
-        /* --- POST FEED --- */
+        /* POST FEED */
         .post-card { background: var(--white); border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid #eee; }
         .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); cursor: pointer; }
@@ -26,42 +26,44 @@
         .user-name { font-weight: 700; font-size: 15px; display: block; color: inherit; text-decoration: none; }
         .post-time { font-size: 12px; color: var(--gray); }
         .post-content { font-size: 15px; line-height: 1.5; margin-bottom: 15px; white-space: pre-wrap; }
-        
-        /* Actions (Like, Comment, Share) */
         .post-actions { display: flex; justify-content: space-between; border-top: 1px solid #f0f0f0; padding-top: 10px; }
         .action-btn { background: none; border: none; display: flex; align-items: center; gap: 5px; color: var(--gray); font-size: 14px; cursor: pointer; padding: 5px 10px; border-radius: 20px; transition: background 0.2s; }
         .action-btn:hover { background: #f8f9fa; }
         .action-btn.liked { color: #e91e63; }
-        .material-icons-round { font-size: 20px; }
 
-        /* --- BOTTOM NAV --- */
+        /* NOTIFICATIONS & RED DOT */
+        .notif-item { background: white; padding: 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .notif-item.unread { background: #fffde7; border-left: 4px solid var(--primary); }
+        .red-dot { width: 10px; height: 10px; background: #ff4444; border-radius: 50%; position: absolute; top: 5px; right: 25%; border: 2px solid white; display: none; }
+        .red-dot.visible { display: block; }
+
+        /* GAME FRAME */
+        .game-frame { width: 100%; height: calc(100vh - 140px); border: none; border-radius: 12px; background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+        /* BOTTOM NAV */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--white); display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000; border-top: 1px solid #eee; }
-        .nav-item { border: none; background: none; color: var(--gray); display: flex; flex-direction: column; align-items: center; font-size: 10px; gap: 4px; cursor: pointer; width: 25%; }
+        .nav-item { border: none; background: none; color: var(--gray); display: flex; flex-direction: column; align-items: center; font-size: 10px; gap: 4px; cursor: pointer; position: relative; width: 20%; }
         .nav-item.active { color: #000; font-weight: bold; }
         .nav-item .material-icons-round { font-size: 26px; }
 
-        /* --- FLOATING ACTION BUTTON (POST) --- */
-        .fab { position: fixed; bottom: 80px; right: 20px; background: var(--primary); color: #000; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4); cursor: pointer; z-index: 900; border: none; font-weight: bold; }
+        /* FAB */
+        .fab { position: fixed; bottom: 85px; right: 20px; background: var(--primary); color: #000; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4); cursor: pointer; z-index: 900; border: none; font-weight: bold; }
 
-        /* --- MODALS (Comment/Post) --- */
+        /* MODALS */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: flex-end; }
-        .modal-content { background: white; width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; padding: 20px; animation: slideUp 0.3s ease; max-height: 80vh; overflow-y: auto; }
-        textarea { width: 100%; border: 1px solid #ddd; padding: 10px; border-radius: 10px; resize: none; height: 100px; font-family: inherit; margin-bottom: 10px; }
+        .modal-content { background: white; width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; padding: 20px; animation: slideUp 0.3s ease; max-height: 80vh; overflow-y: auto; display: flex; flex-direction: column; }
         
-        /* --- PROFILE VIEW --- */
+        /* COMMENTS */
+        .comment-list { flex: 1; overflow-y: auto; margin-bottom: 10px; max-height: 300px; }
+        .comment-item { display: flex; gap: 10px; margin-bottom: 10px; font-size: 14px; }
+        .comment-avatar { width: 30px; height: 30px; border-radius: 50%; }
+
+        /* PROFILE */
         .profile-header { text-align: center; padding: 30px 20px; background: white; border-radius: 0 0 20px 20px; margin-bottom: 15px; }
-        .profile-pic-lg { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 10px; }
+        .profile-pic-lg { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 10px; object-fit: cover; }
         .stats { display: flex; justify-content: center; gap: 20px; margin: 15px 0; }
-        .stat-box { text-align: center; }
-        .stat-num { font-weight: 800; font-size: 18px; display: block; }
-        .stat-label { font-size: 12px; color: var(--gray); }
         .btn-follow { background: #000; color: #fff; border: none; padding: 8px 24px; border-radius: 20px; font-weight: bold; cursor: pointer; }
         .btn-follow.following { background: white; color: #000; border: 1px solid #ddd; }
-
-        /* --- NOTIFICATIONS --- */
-        .notif-item { background: white; padding: 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; }
-        .notif-text { font-size: 14px; }
-        .notif-time { font-size: 11px; color: var(--gray); display: block; margin-top: 4px; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -71,42 +73,38 @@
 
 <header>
     <div class="brand"><h1>🐝 Mobuzzz<span>Pro</span></h1></div>
-    <div id="authBtnContainer">
-        <button id="loginBtn" style="background:#000; color:white; border:none; padding:8px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">Login</button>
-    </div>
+    <div id="authBtnContainer"></div>
 </header>
 
 <div class="container">
-    
     <div id="view-home" class="view-section active">
-        <div id="feed">
-            <p style="text-align:center; padding:20px; color:#888;">Connecting to Hive...</p>
-        </div>
+        <div id="feed"><p style="text-align:center; padding:20px;">Loading...</p></div>
+    </div>
+
+    <div id="view-games" class="view-section">
+        <h3 style="margin: 0 0 10px 0; display:flex; align-items:center; gap:10px;">
+            <span class="material-icons-round" style="color:var(--primary)">sports_esports</span> Pinoy Pool
+        </h3>
+        <iframe src="https://arnoldtasipit66-wq.github.io/my-game-assets/" class="game-frame" title="Pinoy Pool"></iframe>
     </div>
 
     <div id="view-messages" class="view-section">
-        <div style="text-align:center; margin-top:50px;">
-            <span class="material-icons-round" style="font-size:48px; color:#ddd;">chat_bubble_outline</span>
-            <h3>Direct Messages</h3>
-            <p style="color:#666;">Start a buzz with your friends directly!</p>
-            <small>(Coming in v3.0)</small>
+        <div style="text-align:center; margin-top:50px; color:#888;">
+            <span class="material-icons-round" style="font-size:48px;">chat</span>
+            <p>Inbox coming soon.</p>
         </div>
     </div>
 
     <div id="view-notifications" class="view-section">
-        <h3 style="margin-bottom:15px;">Notifications</h3>
-        <div id="notif-list">
-            <p style="text-align:center; color:#888;">No new buzz.</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="margin:0;">Notifications</h3>
+            <button onclick="markAllRead()" style="background:none; border:none; color:var(--primary); font-weight:bold; cursor:pointer;">Mark read</button>
         </div>
+        <div id="notif-list"><p style="text-align:center;">No updates.</p></div>
     </div>
 
     <div id="view-profile" class="view-section">
-        <div id="profile-content">
-            <p style="text-align:center;">Please login to view profile.</p>
-        </div>
-        <hr>
-        <h3>My Posts</h3>
-        <div id="my-posts-feed"></div>
+        <div id="profile-content"></div>
     </div>
 </div>
 
@@ -114,36 +112,49 @@
 
 <nav class="bottom-nav">
     <button class="nav-item active" onclick="switchView('home')">
-        <span class="material-icons-round">home</span> Home
+        <span class="material-icons-round">home</span>
     </button>
+    <button class="nav-item" onclick="switchView('games')">
+        <span class="material-icons-round">sports_esports</span> </button>
     <button class="nav-item" onclick="switchView('messages')">
-        <span class="material-icons-round">mail</span> Messages
+        <span class="material-icons-round">mail</span>
     </button>
     <button class="nav-item" onclick="switchView('notifications')">
-        <span class="material-icons-round">notifications</span> Notifs
-    </button>
+        <span class="material-icons-round">notifications</span>
+        <span id="notif-badge" class="red-dot"></span> </button>
     <button class="nav-item" onclick="switchView('profile')">
-        <span class="material-icons-round">person</span> Profile
+        <span class="material-icons-round">person</span>
     </button>
 </nav>
 
 <div id="postModal" class="modal">
     <div class="modal-content">
-        <h3 style="margin-top:0;">Create Buzz</h3>
-        <textarea id="postInput" placeholder="What's buzzing?"></textarea>
-        <div style="display:flex; justify-content:flex-end; gap:10px;">
-            <button onclick="closeModal('postModal')" style="background:none; border:none; color:#666; cursor:pointer;">Cancel</button>
-            <button id="submitPostBtn" style="background:var(--primary); border:none; padding:10px 20px; border-radius:20px; font-weight:bold; cursor:pointer;">Post</button>
+        <h3>Create Buzz</h3>
+        <textarea id="postInput" placeholder="What's buzzing?" style="width:100%; height:100px; border:1px solid #ddd; padding:10px; border-radius:10px;"></textarea>
+        <div style="text-align:right; margin-top:10px;">
+            <button onclick="closeModal('postModal')" style="margin-right:10px; background:none; border:none;">Cancel</button>
+            <button id="submitPostBtn" style="background:var(--primary); border:none; padding:8px 20px; border-radius:20px; font-weight:bold;">Post</button>
         </div>
+    </div>
+</div>
+
+<div id="commentModal" class="modal">
+    <div class="modal-content" style="height: 60vh;">
+        <h3 style="margin-top:0;">Comments</h3>
+        <div id="commentList" class="comment-list"></div>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="commentInput" placeholder="Write a reply..." style="flex:1; padding:10px; border-radius:20px; border:1px solid #ddd;">
+            <button id="sendCommentBtn" style="background:var(--primary); border:none; border-radius:50%; width:40px; height:40px; font-weight:bold;">➤</button>
+        </div>
+        <button onclick="closeModal('commentModal')" style="margin-top:10px; background:none; border:none; width:100%;">Close</button>
     </div>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, doc, setDoc, getDoc, updateDoc, arrayUnion, arrayRemove, serverTimestamp, query, orderBy, where, onSnapshot, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, arrayUnion, arrayRemove, serverTimestamp, query, orderBy, where, onSnapshot, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
   import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-  // --- CONFIG ---
   const firebaseConfig = {
     apiKey: "AIzaSyD7d5ShdJ6djY3V5mDinsiCYZcUnBGTQpk",
     authDomain: "mobuzzz-ce112.firebaseapp.com",
@@ -156,220 +167,229 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const auth = getAuth(app);
-  
-  // Enable Offline Support
-  enableIndexedDbPersistence(db).catch(err => console.log("Persistence error:", err.code));
+  enableIndexedDbPersistence(db).catch(err => console.log(err.code));
 
-  // --- STATE ---
   let currentUser = null;
+  let activePostId = null;
 
-  // --- NAVIGATION LOGIC ---
+  // --- NAVIGATION ---
   window.switchView = (viewName) => {
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    
     document.getElementById(`view-${viewName}`).classList.add('active');
     
-    // Highlight correct nav icon
-    const navIndex = ['home', 'messages', 'notifications', 'profile'].indexOf(viewName);
-    document.querySelectorAll('.nav-item')[navIndex].classList.add('active');
+    const index = ['home', 'games', 'messages', 'notifications', 'profile'].indexOf(viewName);
+    if(index >= 0) document.querySelectorAll('.nav-item')[index].classList.add('active');
 
-    // Load Profile specific data if switching to profile
     if(viewName === 'profile' && currentUser) loadProfile(currentUser.uid);
   };
 
   window.closeModal = (id) => document.getElementById(id).style.display = 'none';
-  document.getElementById('fabPost').onclick = () => {
-      if(!currentUser) return login();
-      document.getElementById('postModal').style.display = 'flex';
-  }
+  document.getElementById('fabPost').onclick = () => currentUser ? document.getElementById('postModal').style.display = 'flex' : login();
 
-  // --- AUTHENTICATION & USER DB ---
+  // --- AUTH ---
   const login = () => signInWithPopup(auth, new GoogleAuthProvider());
-  document.getElementById('loginBtn').onclick = login;
-
+  
   onAuthStateChanged(auth, async (user) => {
     currentUser = user;
-    const authContainer = document.getElementById('authBtnContainer');
-    
+    const container = document.getElementById('authBtnContainer');
     if (user) {
-      authContainer.innerHTML = `<img src="${user.photoURL}" style="width:32px; height:32px; border-radius:50%; border:2px solid #ddd;" onclick="switchView('profile')">`;
-      
-      // Save User to DB (For Profile/Follow system)
-      const userRef = doc(db, "users", user.uid);
-      await setDoc(userRef, {
-          displayName: user.displayName,
-          photoURL: user.photoURL,
-          email: user.email,
-          lastActive: serverTimestamp()
-      }, { merge: true });
-
-      // Listen for Notifications
+      container.innerHTML = `<img src="${user.photoURL}" style="width:32px; height:32px; border-radius:50%;" onclick="switchView('profile')">`;
+      await setDoc(doc(db, "users", user.uid), { displayName: user.displayName, photoURL: user.photoURL, email: user.email }, { merge: true });
       listenToNotifications(user.uid);
-      
     } else {
-      authContainer.innerHTML = `<button id="loginBtn" style="background:#000; color:white; border:none; padding:8px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">Login</button>`;
-      document.getElementById('loginBtn').onclick = login;
+      container.innerHTML = `<button onclick="login()" style="background:#000; color:white; border:none; padding:5px 15px; border-radius:15px;">Login</button>`;
+      window.login = login; 
     }
   });
 
-  // --- POSTING LOGIC ---
+  // --- POSTS ---
   document.getElementById('submitPostBtn').onclick = async () => {
       const text = document.getElementById('postInput').value;
       if(!text.trim()) return;
-
       closeModal('postModal');
       await addDoc(collection(db, "posts"), {
-          content: text,
-          timestamp: serverTimestamp(),
-          uid: currentUser.uid,
-          authorName: currentUser.displayName,
-          authorPhoto: currentUser.photoURL,
-          likes: [], // Array of User IDs
-          commentsCount: 0
+          content: text, timestamp: serverTimestamp(), uid: currentUser.uid,
+          authorName: currentUser.displayName, authorPhoto: currentUser.photoURL,
+          likes: [], commentsCount: 0
       });
       document.getElementById('postInput').value = "";
   };
 
-  // --- FEED LOGIC & INTERACTIONS ---
   const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
-  
   onSnapshot(q, (snapshot) => {
       const feed = document.getElementById('feed');
       let html = "";
-      
       snapshot.forEach(doc => {
-          const post = doc.data();
-          const isLiked = post.likes && currentUser && post.likes.includes(currentUser.uid);
-          
+          const p = doc.data();
+          const isLiked = p.likes && currentUser && p.likes.includes(currentUser.uid);
           html += `
             <div class="post-card">
                 <div class="post-header">
-                    <img src="${post.authorPhoto}" class="user-avatar" onclick="viewUserProfile('${post.uid}')">
+                    <img src="${p.authorPhoto}" class="user-avatar" onclick="viewUserProfile('${p.uid}')">
                     <div class="user-meta">
-                        <a href="#" class="user-name" onclick="viewUserProfile('${post.uid}')">${post.authorName}</a>
-                        <span class="post-time">${post.timestamp ? new Date(post.timestamp.toDate()).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'Just now'}</span>
+                        <b onclick="viewUserProfile('${p.uid}')">${p.authorName}</b>
+                        <div class="post-time">${p.timestamp ? new Date(p.timestamp.toDate()).toLocaleTimeString() : '...'}</div>
                     </div>
                 </div>
-                <div class="post-content">${escapeHtml(post.content)}</div>
-                
+                <div class="post-content">${p.content}</div>
                 <div class="post-actions">
-                    <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${doc.id}', ${isLiked}, '${post.uid}')">
-                        <span class="material-icons-round">${isLiked ? 'favorite' : 'favorite_border'}</span>
-                        ${post.likes ? post.likes.length : 0}
+                    <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${doc.id}', ${isLiked}, '${p.uid}')">
+                        <span class="material-icons-round">${isLiked ? 'favorite' : 'favorite_border'}</span> ${p.likes ? p.likes.length : 0}
                     </button>
-                    <button class="action-btn" onclick="alert('Comments coming soon!')">
-                        <span class="material-icons-round">chat_bubble_outline</span>
-                        Comment
-                    </button>
-                    <button class="action-btn" onclick="sharePost('${post.content}')">
-                        <span class="material-icons-round">share</span>
+                    <button class="action-btn" onclick="openComments('${doc.id}', '${p.uid}')">
+                        <span class="material-icons-round">chat_bubble_outline</span> ${p.commentsCount || 0}
                     </button>
                 </div>
-            </div>
-          `;
+            </div>`;
       });
-      feed.innerHTML = html || '<p style="text-align:center; padding:20px;">No buzz yet.</p>';
+      feed.innerHTML = html;
   });
 
-  // --- ACTIONS: LIKE, SHARE ---
-  window.toggleLike = async (postId, isLiked, postOwnerId) => {
+  // --- LIKES & NOTIFS ---
+  window.toggleLike = async (postId, isLiked, ownerId) => {
       if(!currentUser) return login();
-      const postRef = doc(db, "posts", postId);
-      
+      const ref = doc(db, "posts", postId);
       if(isLiked) {
-          await updateDoc(postRef, { likes: arrayRemove(currentUser.uid) });
+          await updateDoc(ref, { likes: arrayRemove(currentUser.uid) });
       } else {
-          await updateDoc(postRef, { likes: arrayUnion(currentUser.uid) });
-          // Send Notification (if not liking own post)
-          if(postOwnerId !== currentUser.uid) {
-              await addDoc(collection(db, "notifications"), {
-                  toUid: postOwnerId,
-                  fromName: currentUser.displayName,
-                  type: 'like',
-                  postId: postId,
-                  read: false,
-                  timestamp: serverTimestamp()
-              });
-          }
+          await updateDoc(ref, { likes: arrayUnion(currentUser.uid) });
+          if(ownerId !== currentUser.uid) sendNotif(ownerId, 'like', postId);
       }
   };
 
-  window.sharePost = (text) => {
-      if (navigator.share) {
-          navigator.share({ title: 'Mobuzzz', text: text, url: window.location.href });
-      } else {
-          alert("Sharing not supported on this browser.");
-      }
-  };
+  async function sendNotif(toUid, type, postId) {
+      await addDoc(collection(db, "notifications"), {
+          toUid, fromUid: currentUser.uid, fromName: currentUser.displayName,
+          type, postId, read: false, timestamp: serverTimestamp()
+      });
+  }
 
-  // --- PROFILE LOGIC ---
-  async function loadProfile(targetUid) {
-      const profileContainer = document.getElementById('profile-content');
+  // --- COMMENTS SYSTEM ---
+  window.openComments = (postId, postOwnerId) => {
+      activePostId = postId;
+      document.getElementById('commentModal').style.display = 'flex';
       
-      // If viewing own profile
-      if(currentUser && targetUid === currentUser.uid) {
-        document.getElementById('view-profile').querySelector('h3').innerText = "My Profile";
-      }
+      const q = query(collection(db, `posts/${postId}/comments`), orderBy("timestamp", "asc"));
+      onSnapshot(q, (snap) => {
+          let html = "";
+          snap.forEach(d => {
+              const c = d.data();
+              html += `<div class="comment-item">
+                <img src="${c.photo}" class="comment-avatar">
+                <div style="background:#f0f2f5; padding:8px 12px; border-radius:15px;">
+                    <b>${c.user}</b> <br> ${c.text}
+                </div>
+              </div>`;
+          });
+          document.getElementById('commentList').innerHTML = html;
+      });
+  
+      // Send Comment Logic
+      document.getElementById('sendCommentBtn').onclick = async () => {
+          const txt = document.getElementById('commentInput').value;
+          if(!txt.trim()) return;
+          await addDoc(collection(db, `posts/${postId}/comments`), {
+              text: txt, user: currentUser.displayName, photo: currentUser.photoURL, timestamp: serverTimestamp()
+          });
+          // Update count
+          const postRef = doc(db, "posts", postId);
+          const postSnap = await getDoc(postRef);
+          await updateDoc(postRef, { commentsCount: (postSnap.data().commentsCount || 0) + 1 });
+          
+          if(postOwnerId !== currentUser.uid) sendNotif(postOwnerId, 'comment', postId);
+          document.getElementById('commentInput').value = "";
+      };
+  };
 
+  // --- NOTIFICATIONS & RED DOT ---
+  function listenToNotifications(uid) {
+      const q = query(collection(db, "notifications"), where("toUid", "==", uid), orderBy("timestamp", "desc"));
+      onSnapshot(q, (snap) => {
+          let html = "";
+          let unreadCount = 0;
+          snap.forEach(d => {
+              const n = d.data();
+              if(!n.read) unreadCount++;
+              html += `
+                <div class="notif-item ${n.read ? '' : 'unread'}">
+                    <span class="material-icons-round" style="color:var(--primary)">${n.type == 'like' ? 'favorite' : 'chat'}</span>
+                    <div>
+                        <b>${n.fromName}</b> ${n.type == 'like' ? 'liked your buzz' : 'commented on your buzz'}.
+                        <small style="display:block; color:#888;">${n.timestamp ? new Date(n.timestamp.toDate()).toLocaleTimeString() : ''}</small>
+                    </div>
+                </div>`;
+          });
+          document.getElementById('notif-list').innerHTML = html;
+          
+          // Toggle Red Dot
+          const badge = document.getElementById('notif-badge');
+          if(unreadCount > 0) badge.classList.add('visible');
+          else badge.classList.remove('visible');
+      });
+  }
+
+  window.markAllRead = async () => {
+      if(!currentUser) return;
+      const q = query(collection(db, "notifications"), where("toUid", "==", currentUser.uid), where("read", "==", false));
+      const snap = await getDocs(q);
+      snap.forEach(d => updateDoc(doc(db, "notifications", d.id), { read: true }));
+  };
+
+  // --- PROFILE & FOLLOW ---
+  window.viewUserProfile = (uid) => { loadProfile(uid); switchView('profile'); };
+
+  async function loadProfile(targetUid) {
+      const container = document.getElementById('profile-content');
       const userSnap = await getDoc(doc(db, "users", targetUid));
       if(!userSnap.exists()) return;
-      const userData = userSnap.data();
+      const u = userSnap.data();
+      
+      // Check Follow Status
+      let isFollowing = false;
+      let followerCount = 0;
+      
+      // Get Followers Count
+      const followersSnap = await getDocs(collection(db, `users/${targetUid}/followers`));
+      followerCount = followersSnap.size;
+      
+      if(currentUser) {
+          const followSnap = await getDoc(doc(db, `users/${targetUid}/followers`, currentUser.uid));
+          isFollowing = followSnap.exists();
+      }
 
-      profileContainer.innerHTML = `
+      const isMe = currentUser && currentUser.uid === targetUid;
+
+      container.innerHTML = `
         <div class="profile-header">
-            <img src="${userData.photoURL}" class="profile-pic-lg">
-            <h2>${userData.displayName}</h2>
+            <img src="${u.photoURL}" class="profile-pic-lg">
+            <h2>${u.displayName}</h2>
             <div class="stats">
-                <div class="stat-box"><span class="stat-num">0</span><span class="stat-label">Followers</span></div>
-                <div class="stat-box"><span class="stat-num">0</span><span class="stat-label">Following</span></div>
+                <div><b>${followerCount}</b><br><small>Followers</small></div>
             </div>
-            ${currentUser && currentUser.uid === targetUid ? 
+            ${isMe ? 
                 `<button class="btn-follow" style="background:#ff4444;" onclick="doLogout()">Logout</button>` : 
-                `<button class="btn-follow">Follow</button>`
+                `<button class="btn-follow ${isFollowing ? 'following' : ''}" onclick="toggleFollow('${targetUid}', ${isFollowing})">
+                    ${isFollowing ? 'Following' : 'Follow'}
+                </button>`
             }
         </div>
       `;
   }
 
-  // Expose to window for HTML onclicks
-  window.viewUserProfile = (uid) => {
-      loadProfile(uid);
-      switchView('profile');
-  };
-  
-  window.doLogout = () => {
-      signOut(auth).then(() => {
-          window.location.reload();
-      });
+  window.toggleFollow = async (targetUid, isFollowing) => {
+      if(!currentUser) return login();
+      const ref = doc(db, `users/${targetUid}/followers`, currentUser.uid);
+      if(isFollowing) {
+          await deleteDoc(ref);
+      } else {
+          await setDoc(ref, { timestamp: serverTimestamp() });
+          sendNotif(targetUid, 'follow', null); // Send follow notif
+      }
+      loadProfile(targetUid); // Refresh UI
   };
 
-  // --- NOTIFICATIONS LOGIC ---
-  function listenToNotifications(uid) {
-      const q = query(collection(db, "notifications"), where("toUid", "==", uid), orderBy("timestamp", "desc"));
-      onSnapshot(q, (snap) => {
-          const list = document.getElementById('notif-list');
-          let html = "";
-          snap.forEach(d => {
-              const n = d.data();
-              html += `
-                <div class="notif-item">
-                    <span class="material-icons-round" style="color:var(--primary);">favorite</span>
-                    <div>
-                        <span class="notif-text"><b>${n.fromName}</b> liked your buzz.</span>
-                        <span class="notif-time">${n.timestamp ? new Date(n.timestamp.toDate()).toLocaleTimeString() : ''}</span>
-                    </div>
-                </div>`;
-          });
-          if(html) list.innerHTML = html;
-      });
-  }
-
-  // Helper
-  function escapeHtml(text) {
-      return text ? text.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
-  }
+  window.doLogout = () => signOut(auth).then(() => window.location.reload());
 </script>
-
 </body>
 </html>
