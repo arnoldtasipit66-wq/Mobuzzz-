@@ -2,209 +2,277 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mobuzzz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <title>Mobuzzz Pro</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FFD700">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default"> 
+    <meta name="apple-mobile-web-app-title" content="Mobuzzz">
 
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    
     <style>
-        :root { --main-yellow: #FFD700; --bg: #FFFDF0; --blue-badge: #1DA1F2; --danger: #ff4757; }
+        :root { --primary: #FFD700; --bg: #f8f9fa; --text: #212529; --gray: #6c757d; --white: #ffffff; }
         
         body { 
-            font-family: 'Segoe UI', sans-serif; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             background: var(--bg); 
+            color: var(--text); 
             margin: 0; 
-            padding-bottom: 90px; 
-            color: #333;
-            overscroll-behavior-y: none;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            overflow-x: hidden;
-        }
-
-        header { 
-            background: var(--main-yellow); 
-            padding: 15px; 
-            text-align: center; 
-            font-size: 22px; 
-            font-weight: 900; 
-            position: sticky; 
-            top: 0; 
-            z-index: 2000; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 0; 
+            
+            /* padding-bottom para sa navigation bar */
+            padding-bottom: calc(75px + env(safe-area-inset-bottom)); 
+            
+            overscroll-behavior-y: none; /* Pigilan ang pull-to-refresh */
         }
         
-        .container { padding: 10px; max-width: 500px; margin: 0 auto; }
-        .card { background: white; padding: 15px; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 15px; border: 1px solid #f0f0f0; }
-        .hidden { display: none !important; }
+        /* HEADER */
+        header { 
+            background: var(--white); 
+            padding: 15px; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            /* Para hindi matakpan ng Status Bar (Battery/Signal) sa iOS/Android */
+            padding-top: calc(15px + env(safe-area-inset-top));
+        }
+        
+        h1 { margin: 0; font-size: 20px; font-weight: 800; color: #000; letter-spacing: -0.5px; }
+        .brand span { color: #f39c12; }
+        
+        .container { max-width: 600px; margin: 0 auto; padding: 15px; }
+        .view-section { display: none; animation: fadeIn 0.2s ease-out; }
+        .view-section.active { display: block; }
 
-        /* --- GAME FIX: ROTATION LOGIC --- */
-        #gameView {
-            position: relative;
-            height: calc(100vh - 150px);
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
+        /* POST FEED */
+        .post-card { background: var(--white); border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid #eee; }
+        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); cursor: pointer; }
+        .user-meta { flex: 1; }
+        .user-name { font-weight: 700; font-size: 15px; display: block; color: inherit; text-decoration: none; }
+        .post-time { font-size: 12px; color: var(--gray); }
+        .post-content { font-size: 15px; line-height: 1.5; margin-bottom: 15px; white-space: pre-wrap; }
+        .post-actions { display: flex; justify-content: space-between; border-top: 1px solid #f0f0f0; padding-top: 10px; }
+        .action-btn { background: none; border: none; display: flex; align-items: center; gap: 5px; color: var(--gray); font-size: 14px; cursor: pointer; padding: 5px 10px; border-radius: 20px; transition: background 0.2s; }
+        .action-btn:hover { background: #f8f9fa; }
+        .action-btn.liked { color: #e91e63; }
+
+        /* NOTIFICATIONS & RED DOT */
+        .notif-item { background: white; padding: 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .notif-item.unread { background: #fffde7; border-left: 4px solid var(--primary); }
+        .red-dot { width: 10px; height: 10px; background: #ff4444; border-radius: 50%; position: absolute; top: 5px; right: 25%; border: 2px solid white; display: none; }
+        .red-dot.visible { display: block; }
+
+        /* --- GAME MODE: IMMERSIVE --- */
+        body.game-mode {
+            background: #000;
+            padding: 0 !important; /* Reset padding to 0 for game */
+            overflow: hidden;
+        }
+        body.game-mode header, 
+        body.game-mode .bottom-nav, 
+        body.game-mode .fab,
+        body.game-mode .container {
+            display: none !important;
         }
 
         .game-wrapper {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transition: 0.3s;
-            background: black;
-            border-radius: 15px;
-            overflow: hidden;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 5000;
+            display: flex; justify-content: center; align-items: center; overflow: hidden;
         }
 
         .game-frame {
-            width: 100%;
-            height: 100%;
-            border: none;
+            width: 100vh; height: 100vw; 
+            transform: rotate(90deg); transform-origin: center;
+            border: none; position: absolute;
         }
 
-        .landscape-mode {
-            position: fixed !important;
-            top: 0;
-            left: 0;
-            width: 100vh !important;
-            height: 100vw !important;
-            z-index: 5000;
-            transform: rotate(90deg);
-            transform-origin: top left;
-            margin-left: 100vw;
-            border-radius: 0 !important;
+        /* EXIT BUTTON (Visible on Game) */
+        .game-exit-btn {
+            position: fixed; top: 20px; right: 90px;
+            background: rgba(255, 68, 68, 0.9); color: white;
+            border: 2px solid white; width: 40px; height: 40px; border-radius: 50%;
+            z-index: 6000; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            transform: rotate(90deg); 
         }
 
-        #rotateBtn {
-            background: #222;
-            color: white;
-            border: 1px solid #444;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            z-index: 6000; /* Ensure it's always on top */
+        /* --- LOADING CURTAIN --- */
+        .rotate-hint {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 5002;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: white; pointer-events: none;
+            /* 4s delay tapos mawawala */
+            animation: curtainFade 0.5s forwards 4s; 
         }
-        /* -------------------------------- */
+        .rotate-content { transform: rotate(90deg); text-align: center; }
 
-        /* Post Styling */
-        .verified-badge { color: var(--blue-badge); font-size: 14px; margin-left: 4px; vertical-align: middle; }
-        .profile-pic { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--main-yellow); cursor: pointer; }
-        .post { background: white; padding: 15px; border-radius: 18px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); position: relative; border: 1px solid #f5f5f5; }
-        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .post-img { width: 100%; border-radius: 12px; margin-top: 10px; display: block; }
-        .btn-delete { position: absolute; top: 10px; right: 10px; background: none; border: none; color: #ccc; cursor: pointer; font-size: 16px; padding: 8px; }
-        .action-bar { display: flex; justify-content: space-around; border-top: 1px solid #f9f9f9; padding-top: 12px; margin-top: 10px; }
-        .action-btn { background: none; border: none; cursor: pointer; font-size: 14px; color: #666; display: flex; align-items: center; gap: 6px; font-weight: 600; }
+        /* EXIT CONFIRMATION MODAL */
+        .exit-confirm-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 6001;
+            justify-content: center; align-items: center;
+        }
+        .exit-box {
+            background: white; padding: 25px; border-radius: 20px; text-align: center;
+            width: 300px; transform: rotate(90deg); border: 4px solid var(--primary);
+        }
+        .exit-actions { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
+        .btn-stay { background: #eee; color: #333; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+        .btn-leave { background: #d32f2f; color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+
+        /* BOTTOM NAV */
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 0; width: 100%; background: var(--white); 
+            display: flex; justify-content: space-around; padding: 10px 0; 
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000; border-top: 1px solid #eee;
+            /* Adjust for Home Bar (iPhone X pataas) */
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .nav-item { border: none; background: none; color: var(--gray); display: flex; flex-direction: column; align-items: center; font-size: 10px; gap: 4px; cursor: pointer; position: relative; width: 20%; }
+        .nav-item.active { color: #000; font-weight: bold; }
+        .nav-item .material-icons-round { font-size: 26px; }
+
+        /* FAB */
+        .fab { position: fixed; bottom: calc(75px + env(safe-area-inset-bottom)); right: 20px; background: var(--primary); color: #000; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4); cursor: pointer; z-index: 900; border: none; font-weight: bold; }
+
+        /* MODALS */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: flex-end; }
+        .modal-content { background: white; width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); animation: slideUp 0.3s ease; max-height: 80vh; overflow-y: auto; display: flex; flex-direction: column; }
         
-        /* Notifs & Chat */
-        .notif-item { padding: 15px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 12px; background: white; border-radius: 10px; margin-bottom: 5px; }
-        .bubble { padding: 10px 14px; border-radius: 18px; max-width: 75%; font-size: 15px; margin-bottom: 6px; word-wrap: break-word; }
-        .bubble-me { background: var(--main-yellow); align-self: flex-end; }
-        .bubble-them { background: #f0f0f0; align-self: flex-start; }
+        /* COMMENTS */
+        .comment-list { flex: 1; overflow-y: auto; margin-bottom: 10px; max-height: 40vh; }
+        .comment-item { display: flex; gap: 10px; margin-bottom: 10px; font-size: 14px; }
+        .comment-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
 
-        /* Nav */
-        nav { display: flex; justify-content: space-around; background: white; padding: 15px 0; border-top: 1px solid #eee; position: fixed; bottom: 0; width: 100%; z-index: 2000; padding-bottom: max(15px, env(safe-area-inset-bottom)); }
-        nav button { background: none; border: none; font-size: 24px; cursor: pointer; color: #ccc; position: relative; transition: 0.2s; }
-        nav button.active { color: #000; transform: translateY(-3px); }
-        .badge-dot { position: absolute; top: 0; right: 0; width: 10px; height: 10px; background: red; border-radius: 50%; display: none; border: 2px solid white; }
-        .btn-yellow { background: var(--main-yellow); border: none; padding: 10px 24px; border-radius: 25px; font-weight: bold; cursor: pointer; font-size: 14px; }
-        
-        input, textarea { font-family: inherit; }
+        /* PROFILE */
+        .profile-header { text-align: center; padding: 30px 20px; background: white; border-radius: 0 0 20px 20px; margin-bottom: 15px; }
+        .profile-pic-lg { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 10px; object-fit: cover; }
+        .stats { display: flex; justify-content: center; gap: 20px; margin: 15px 0; }
+        .btn-follow { background: #000; color: #fff; border: none; padding: 8px 24px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+        .btn-follow.following { background: white; color: #000; border: 1px solid #ddd; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes curtainFade { 0% { opacity: 1; } 99% { opacity: 0; } 100% { opacity: 0; visibility: hidden; } }
     </style>
 </head>
 <body>
 
-<header>🐝 Mobuzzz</header>
+<header>
+    <div class="brand"><h1>🐝 Mobuzzz<span>Pro</span></h1></div>
+    <div id="authBtnContainer"></div>
+</header>
 
-<div class="container">
-    <div id="authSection" class="card">
-        <div style="text-align:center; padding:20px;">
-            <h2>Welcome Hive!</h2>
-            <button class="btn-yellow" onclick="login()" style="width:100%">Log in with Google</button>
-        </div>
-    </div>
+<button class="game-exit-btn" id="gameExitBtn" onclick="showExitConfirm()" style="display:none;">
+    <span class="material-icons-round">close</span>
+</button>
 
-    <div id="homeView" class="tab-view hidden">
-        <div id="postArea" class="card">
-            <textarea id="postInput" placeholder="What's happening?" style="width:100%; border:none; outline:none; resize:none; font-size:16px; min-height:60px;"></textarea>
-            <div id="imagePreviewContainer" class="hidden"><img id="postImagePreview" style="width:100%; border-radius:10px; margin-bottom:10px;"></div>
-            <div style="display:flex; justify-content: space-between; align-items: center; margin-top:10px; border-top:1px solid #f9f9f9; padding-top:10px;">
-                <label for="postImageUpload" style="cursor:pointer; font-size:20px; padding:5px;">📷</label>
-                <input type="file" id="postImageUpload" accept="image/*" style="display:none;">
-                <button class="btn-yellow" id="postBtn">Buzz</button>
-            </div>
-        </div>
-        <div id="feed" style="padding-bottom: 20px;"></div>
-    </div>
-
-    <div id="gameView" class="tab-view hidden">
-        <button id="rotateBtn" onclick="toggleGameRotation()">🔄 Rotate Screen (Fullscreen)</button>
-        
-        <div id="gameContainer" class="game-wrapper">
-            <iframe src="https://arnoldtasipit66-wq.github.io/my-game-assets/" class="game-frame" title="Pinoy Pool"></iframe>
-        </div>
-        
-        <p style="text-align:center; color:#888; font-size:12px; margin-top:10px;">
-            Click <b>Rotate</b> and turn your phone sideways! 🎱
-        </p>
-    </div>
-
-    <div id="notifView" class="tab-view hidden">
-        <h3 style="margin:10px;">Notifications</h3>
-        <div id="notifList"></div>
-    </div>
-
-    <div id="msgView" class="tab-view hidden">
-        <div class="card" style="height: calc(100vh - 180px); display:flex; flex-direction:column;">
-            <h3 id="chatTitle" style="border-bottom:1px solid #eee; padding-bottom:10px; margin-top:0;">Messages</h3>
-            <div id="chatRoomArea" class="hidden" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
-                <div id="chatMessages" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; padding:10px; gap:5px;"></div>
-                <div style="display:flex; gap:8px; padding-top:10px; border-top:1px solid #eee;">
-                    <input type="text" id="chatInput" placeholder="Type a message..." style="flex:1; border:none; background:#f5f5f5; padding:12px; border-radius:20px; outline:none;">
-                    <button class="btn-yellow" id="sendMsgBtn" style="padding:10px 15px;">➤</button>
-                </div>
-            </div>
-            <p id="noChatMsg" style="text-align:center; color:#888; margin-top:50px;">Visit a profile to start chatting! 💬</p>
-        </div>
-    </div>
-
-    <div id="profileView" class="tab-view hidden">
-        <div class="card" style="text-align:center">
-            <img id="p-pic" class="profile-pic" style="width:100px; height:100px; border:4px solid var(--main-yellow);">
-            <h2 id="p-user" style="margin:10px 0;">@username</h2>
-            <div id="profileActions" style="margin-bottom:20px; display:flex; gap:10px; justify-content:center;">
-                <button id="followBtn" class="btn-yellow">Follow</button>
-                <button id="dmBtn" class="btn-yellow" style="background:#eee; color:#333;">Message</button>
-            </div>
-            <hr style="border:0; border-top:1px solid #eee; margin-bottom:15px;">
-            <div id="userFeed"></div>
+<div id="exitConfirmModal" class="exit-confirm-modal">
+    <div class="exit-box">
+        <span class="material-icons-round" style="font-size:48px; color:#d32f2f;">warning</span>
+        <h3>Exit Game?</h3>
+        <p>Are you sure you want to close Pinoy Pool?</p>
+        <div class="exit-actions">
+            <button class="btn-stay" onclick="closeExitConfirm()">Cancel</button>
+            <button class="btn-leave" onclick="confirmExitGame()">Yes, Exit</button>
         </div>
     </div>
 </div>
 
-<nav id="bottomNav" class="hidden">
-    <button id="navHome" onclick="switchView('home')" class="active">🏠</button>
-    <button id="navGame" onclick="switchView('game')">🎱</button>
-    <button id="navNotif" onclick="switchView('notif')">🔔<div id="notifDot" class="badge-dot"></div></button>
-    <button id="navMsg" onclick="switchView('msg')">💬</button>
-    <button id="navProfile" onclick="viewProfile(currentUsername)">👤</button>
+<div id="view-games" class="view-section">
+    <div class="game-wrapper">
+        <div class="rotate-hint">
+            <div class="rotate-content">
+                <span class="material-icons-round" style="font-size:48px; display:block; margin-bottom:10px;">screen_rotation</span> 
+                <h2>Loading Game...</h2>
+                <p>Rotate Phone</p>
+            </div>
+        </div>
+        <iframe src="https://arnoldtasipit66-wq.github.io/my-game-assets/" class="game-frame" title="Pinoy Pool"></iframe>
+    </div>
+</div>
+
+<div class="container">
+    <div id="view-home" class="view-section active">
+        <div id="feed"><p style="text-align:center; padding:20px;">Connecting to Hive...</p></div>
+    </div>
+    <div id="view-messages" class="view-section">
+        <div style="text-align:center; margin-top:50px; color:#888;">
+            <span class="material-icons-round" style="font-size:48px;">chat</span>
+            <p>Inbox coming soon.</p>
+        </div>
+    </div>
+    <div id="view-notifications" class="view-section">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="margin:0;">Notifications</h3>
+            <button onclick="markAllRead()" style="background:none; border:none; color:var(--primary); font-weight:bold; cursor:pointer;">Mark read</button>
+        </div>
+        <div id="notif-list"><p style="text-align:center;">No updates.</p></div>
+    </div>
+    <div id="view-profile" class="view-section">
+        <div id="profile-content"></div>
+    </div>
+</div>
+
+<button class="fab" id="fabPost"><span class="material-icons-round">add</span></button>
+
+<nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchView('home')">
+        <span class="material-icons-round">home</span>
+    </button>
+    <button class="nav-item" onclick="switchView('games')">
+        <span class="material-icons-round">sports_esports</span>
+    </button>
+    <button class="nav-item" onclick="switchView('messages')">
+        <span class="material-icons-round">mail</span>
+    </button>
+    <button class="nav-item" onclick="switchView('notifications')">
+        <span class="material-icons-round">notifications</span>
+        <span id="notif-badge" class="red-dot"></span>
+    </button>
+    <button class="nav-item" onclick="switchView('profile')">
+        <span class="material-icons-round">person</span>
+    </button>
 </nav>
+
+<div id="postModal" class="modal" onclick="closeModal(event, 'postModal')">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h3>Create Buzz</h3>
+        <textarea id="postInput" placeholder="What's buzzing?" style="width:100%; height:100px; border:1px solid #ddd; padding:10px; border-radius:10px; box-sizing:border-box;"></textarea>
+        <div style="text-align:right; margin-top:10px;">
+            <button onclick="document.getElementById('postModal').style.display='none'" style="margin-right:10px; background:none; border:none;">Cancel</button>
+            <button id="submitPostBtn" style="background:var(--primary); border:none; padding:8px 20px; border-radius:20px; font-weight:bold;">Post</button>
+        </div>
+    </div>
+</div>
+
+<div id="commentModal" class="modal" onclick="closeModal(event, 'commentModal')">
+    <div class="modal-content" style="height: 60vh;" onclick="event.stopPropagation()">
+        <div style="width:40px; height:4px; background:#eee; border-radius:2px; margin:0 auto 15px auto;"></div>
+        <h3 style="margin-top:0;">Comments</h3>
+        <div id="commentList" class="comment-list"></div>
+        <div style="display:flex; gap:10px; margin-top:auto;">
+            <input type="text" id="commentInput" placeholder="Write a reply..." style="flex:1; padding:10px; border-radius:20px; border:1px solid #ddd; outline:none;">
+            <button id="sendCommentBtn" style="background:var(--primary); border:none; border-radius:50%; width:40px; height:40px; font-weight:bold; cursor:pointer;">➤</button>
+        </div>
+    </div>
+</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, doc, getDoc, setDoc, where, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+  import { getFirestore, collection, addDoc, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, arrayUnion, arrayRemove, serverTimestamp, query, orderBy, where, onSnapshot, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyD7d5ShdJ6djY3V5mDinsiCYZcUnBGTQpk",
@@ -212,254 +280,260 @@
     projectId: "mobuzzz-ce112",
     storageBucket: "mobuzzz-ce112.firebasestorage.app",
     messagingSenderId: "1033041132259",
-    appId: "1:1033041132259:web:df28b71b2d641a697923d6",
-    measurementId: "G-Q7MJMFRDQF"
+    appId: "1:1033041132259:web:df28b71b2d641a697923d6"
   };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const auth = getAuth(app);
-  const storage = getStorage(app);
-  const provider = new GoogleAuthProvider();
+  
+  // Safe persistence
+  try {
+      enableIndexedDbPersistence(db).catch(err => console.log("Persistence:", err.code));
+  } catch(e) {}
 
   let currentUser = null;
-  let currentUsername = "";
-  let currentProfilePic = "";
-  let activeChatId = null;
 
-  const verifiedList = ["dugzhak", "arnold23", "admin"]; 
-  const getBadge = (user) => verifiedList.includes(user) ? '<span class="verified-badge">✔</span>' : '';
-
-  window.login = () => signInWithPopup(auth, provider);
-  
-  // --- ROTATION LOGIC FOR GAME ---
-  window.toggleGameRotation = () => {
-    const game = document.getElementById('gameContainer');
-    const btn = document.getElementById('rotateBtn');
-    game.classList.toggle('landscape-mode');
-    
-    if (game.classList.contains('landscape-mode')) {
-        // Fullscreen Mode: Hide Nav/Header, Move Button to Top Right
-        document.getElementById('bottomNav').style.display = 'none';
-        document.querySelector('header').style.display = 'none';
-        btn.innerText = "❌ Close Game";
-        btn.style.position = 'fixed';
-        btn.style.top = '10px'; // Move to top
-        btn.style.right = '10px'; // Move to right
-        btn.style.bottom = 'auto'; // Reset bottom
-        btn.style.zIndex = '6000';
-    } else {
-        // Normal Mode: Show Nav/Header, Reset Button
-        document.getElementById('bottomNav').style.display = 'flex';
-        document.querySelector('header').style.display = 'block';
-        btn.innerText = "🔄 Rotate Screen (Fullscreen)";
-        btn.style.position = 'static';
-    }
+  // --- GAME EXIT LOGIC ---
+  window.showExitConfirm = () => document.getElementById('exitConfirmModal').style.display = 'flex';
+  window.closeExitConfirm = () => document.getElementById('exitConfirmModal').style.display = 'none';
+  window.confirmExitGame = () => {
+      window.closeExitConfirm();
+      window.switchView('home');
   };
 
+  // --- NAVIGATION ---
+  window.switchView = (viewName) => {
+    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    
+    // Game Mode Logic
+    if(viewName === 'games') {
+        document.body.classList.add('game-mode');
+        document.getElementById('view-games').classList.add('active');
+        document.getElementById('gameExitBtn').style.display = 'flex';
+        document.querySelectorAll('.nav-item')[1].classList.add('active');
+        return; 
+    } else {
+        document.body.classList.remove('game-mode'); 
+        document.getElementById('gameExitBtn').style.display = 'none';
+        document.getElementById('exitConfirmModal').style.display = 'none';
+    }
+
+    document.getElementById(`view-${viewName}`).classList.add('active');
+    const index = ['home', 'games', 'messages', 'notifications', 'profile'].indexOf(viewName);
+    if(index >= 0) document.querySelectorAll('.nav-item')[index].classList.add('active');
+
+    if(viewName === 'profile' && currentUser) loadProfile(currentUser.uid);
+  };
+
+  window.closeModal = (event, id) => {
+      if(event.target.id === id) document.getElementById(id).style.display = 'none';
+  };
+  
+  document.getElementById('fabPost').onclick = () => currentUser ? document.getElementById('postModal').style.display = 'flex' : login();
+
+  // --- AUTH ---
+  const login = () => signInWithPopup(auth, new GoogleAuthProvider());
+  
   onAuthStateChanged(auth, async (user) => {
+    currentUser = user;
+    const container = document.getElementById('authBtnContainer');
     if (user) {
-      currentUser = user;
-      document.getElementById('authSection').classList.add('hidden');
-      const uSnap = await getDoc(doc(db, "users", user.uid));
-      if (uSnap.exists()) {
-        currentUsername = uSnap.data().username;
-        currentProfilePic = uSnap.data().photo || user.photoURL;
-        startApp();
-      } else {
-        const name = prompt("Username:");
-        if (name) {
-          await setDoc(doc(db, "usernames", name.toLowerCase()), { uid: user.uid });
-          await setDoc(doc(db, "users", user.uid), { username: name.toLowerCase(), photo: user.photoURL });
-          location.reload();
-        }
-      }
+      container.innerHTML = `<img src="${user.photoURL}" style="width:32px; height:32px; border-radius:50%; border:2px solid #ddd;" onclick="switchView('profile')">`;
+      await setDoc(doc(db, "users", user.uid), { displayName: user.displayName, photoURL: user.photoURL, email: user.email }, { merge: true });
+      listenToNotifications(user.uid);
+    } else {
+      container.innerHTML = `<button onclick="login()" style="background:#000; color:white; border:none; padding:8px 15px; border-radius:15px; font-weight:bold;">Login</button>`;
+      window.login = login; 
     }
   });
 
-  function startApp() {
-    document.getElementById('homeView').classList.remove('hidden');
-    document.getElementById('bottomNav').classList.remove('hidden');
-    loadFeed();
-    listenNotifs();
-  }
-
-  // --- ACTIONS ---
-  window.deletePost = async (id) => {
-    if (confirm("Delete this buzz?")) await deleteDoc(doc(db, "posts", id));
-  };
-
-  window.like = async (id, targetUid) => {
-    const lRef = doc(db, "posts", id, "likes", currentUser.uid);
-    const snap = await getDoc(lRef);
-    if (snap.exists()) {
-        await deleteDoc(lRef);
-    } else {
-        await setDoc(lRef, { u: currentUsername });
-        pushNotif(targetUid, "liked your buzz! ❤️");
-    }
-  };
-
-  window.addComment = async (id, targetUid) => {
-    const val = document.getElementById(`c-in-${id}`).value;
-    if (!val.trim()) return;
-    await addDoc(collection(db, "posts", id, "comments"), { text: val, user: currentUsername, timestamp: serverTimestamp() });
-    document.getElementById(`c-in-${id}`).value = "";
-    pushNotif(targetUid, "commented on your buzz 💬");
-  };
-
-  async function pushNotif(targetUid, msg) {
-    if(targetUid === currentUser.uid) return; 
-    await addDoc(collection(db, targetUid, "notifs"), { from: currentUsername, msg: msg, time: serverTimestamp() });
-  }
-
-  function listenNotifs() {
-    onSnapshot(query(collection(db, currentUser.uid, "notifs"), orderBy("time", "desc")), s => {
-      const list = document.getElementById('notifList');
-      list.innerHTML = "";
-      if (!s.empty) document.getElementById('notifDot').style.display = 'block';
-      s.forEach(d => list.innerHTML += `
-        <div class="notif-item">
-            <div style="font-size:20px;">🔔</div>
-            <div><b>@${d.data().from}</b> ${d.data().msg}</div>
-        </div>`);
-    });
-  }
-
-  function loadFeed() {
-    const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
-    onSnapshot(q, s => {
-      const feed = document.getElementById('feed');
-      feed.innerHTML = "";
-      s.forEach(postDoc => {
-        const d = postDoc.data();
-        const id = postDoc.id;
-        const deleteBtn = (currentUser && d.uid === currentUser.uid) ? `<button class="btn-delete" onclick="deletePost('${id}')">🗑️</button>` : '';
-        const div = document.createElement('div');
-        div.className = 'post';
-        div.innerHTML = `
-          ${deleteBtn}
-          <div class="post-header">
-            <img src="${d.userPhoto}" class="profile-pic" onclick="viewProfile('${d.user}')">
-            <div onclick="viewProfile('${d.user}')">
-                <b style="font-size:15px;">@${d.user}${getBadge(d.user)}</b><br>
-                <span style="font-size:11px; color:#999;">Hive Member</span>
-            </div>
-          </div>
-          <div class="post-content">${d.content}</div>
-          ${d.postImage ? `<img class="post-img" src="${d.postImage}">` : ''}
-          <div class="action-bar">
-            <button class="action-btn" onclick="like('${id}', '${d.uid}')">❤️ <span id="l-${id}">0</span></button>
-            <button class="action-btn" onclick="document.getElementById('c-sec-${id}').classList.toggle('hidden')">💬 <span id="cc-${id}">0</span></button>
-          </div>
-          <div id="c-sec-${id}" class="comment-section hidden">
-            <div id="c-list-${id}"></div>
-            <div style="display:flex; gap:8px; margin-top:10px;">
-              <input type="text" id="c-in-${id}" placeholder="Comment..." style="flex:1; border:none; background:#f5f5f5; padding:8px 12px; border-radius:15px; outline:none;">
-              <button class="btn-yellow" style="padding:5px 15px;" onclick="addComment('${id}', '${d.uid}')">➤</button>
-            </div>
-          </div>
-        `;
-        feed.appendChild(div);
-        initInteractions(id);
+  // --- POSTS ---
+  document.getElementById('submitPostBtn').onclick = async () => {
+      const text = document.getElementById('postInput').value;
+      if(!text.trim()) return;
+      document.getElementById('postModal').style.display = 'none';
+      await addDoc(collection(db, "posts"), {
+          content: text, timestamp: serverTimestamp(), uid: currentUser.uid,
+          authorName: currentUser.displayName, authorPhoto: currentUser.photoURL,
+          likes: [], commentsCount: 0
       });
-    });
-  }
-
-  function initInteractions(postId) {
-    onSnapshot(collection(db, "posts", postId, "likes"), s => document.getElementById(`l-${postId}`).innerText = s.size);
-    onSnapshot(query(collection(db, "posts", postId, "comments"), orderBy("timestamp", "asc")), s => {
-      document.getElementById(`cc-${postId}`).innerText = s.size;
-      const list = document.getElementById(`c-list-${postId}`);
-      list.innerHTML = "";
-      s.forEach(c => list.innerHTML += `<div style="margin-bottom:5px; font-size:13px;"><b>@${c.data().user}</b> ${c.data().text}</div>`);
-    });
-  }
-
-  window.viewProfile = async (un) => {
-    switchView('profile');
-    const uSnap = await getDocs(query(collection(db, "users"), where("username", "==", un)));
-    uSnap.forEach(d => {
-        document.getElementById('p-user').innerHTML = "@" + un + getBadge(un);
-        document.getElementById('p-pic').src = d.data().photo;
-        const isMe = un === currentUsername;
-        document.getElementById('profileActions').style.display = isMe ? 'none' : 'flex';
-        document.getElementById('followBtn').onclick = () => { pushNotif(d.id, "started following you! 🚀"); alert("Following!"); };
-        document.getElementById('dmBtn').onclick = () => startChat(d.id, un);
-    });
-    const pSnap = await getDocs(query(collection(db, "posts"), where("user", "==", un), orderBy("timestamp", "desc")));
-    const uFeed = document.getElementById('userFeed'); uFeed.innerHTML = "";
-    pSnap.forEach(doc => { uFeed.innerHTML += `<div class="post"><div class="post-content">${doc.data().content}</div></div>`; });
-  }
-
-  async function startChat(targetUid, targetName) {
-    switchView('msg');
-    document.getElementById('noChatMsg').classList.add('hidden');
-    document.getElementById('chatRoomArea').classList.remove('hidden');
-    document.getElementById('chatTitle').innerText = "@" + targetName;
-    activeChatId = [currentUser.uid, targetUid].sort().join("_");
-    onSnapshot(query(collection(db, "chats", activeChatId, "messages"), orderBy("time", "asc")), s => {
-        const box = document.getElementById('chatMessages'); box.innerHTML = "";
-        s.forEach(m => {
-            const isMe = m.data().sender === currentUser.uid;
-            box.innerHTML += `<div class="bubble ${isMe ? 'bubble-me' : 'bubble-them'}">${m.data().text}</div>`;
-        });
-        box.scrollTop = box.scrollHeight;
-    });
-  }
-
-  document.getElementById('sendMsgBtn').onclick = async () => {
-    const input = document.getElementById('chatInput');
-    if (!input.value.trim() || !activeChatId) return;
-    await addDoc(collection(db, "chats", activeChatId, "messages"), { text: input.value, sender: currentUser.uid, time: serverTimestamp() });
-    input.value = "";
+      document.getElementById('postInput').value = "";
   };
 
-  window.switchView = (v) => {
-    document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
-    document.getElementById(v + 'View').classList.remove('hidden');
-    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-    document.getElementById('nav' + v.charAt(0).toUpperCase() + v.slice(1)).classList.add('active');
-    if (v === 'notif') document.getElementById('notifDot').style.display = 'none';
-    
-    if (v !== 'game') {
-         document.getElementById('gameContainer').classList.remove('landscape-mode');
-         document.getElementById('bottomNav').style.display = 'flex';
-         document.querySelector('header').style.display = 'block';
-         document.getElementById('rotateBtn').innerText = "🔄 Rotate Screen (Fullscreen)";
-         document.getElementById('rotateBtn').style.position = 'static';
-    }
-  }
+  const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+  onSnapshot(q, (snapshot) => {
+      const feed = document.getElementById('feed');
+      let html = "";
+      snapshot.forEach(doc => {
+          const p = doc.data();
+          const isLiked = p.likes && currentUser && p.likes.includes(currentUser.uid);
+          html += `
+            <div class="post-card">
+                <div class="post-header">
+                    <img src="${p.authorPhoto}" class="user-avatar" onclick="viewUserProfile('${p.uid}')">
+                    <div class="user-meta">
+                        <b onclick="viewUserProfile('${p.uid}')">${p.authorName}</b>
+                        <div class="post-time">${p.timestamp ? new Date(p.timestamp.toDate()).toLocaleTimeString() : '...'}</div>
+                    </div>
+                </div>
+                <div class="post-content">${p.content}</div>
+                <div class="post-actions">
+                    <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${doc.id}', ${isLiked}, '${p.uid}')">
+                        <span class="material-icons-round">${isLiked ? 'favorite' : 'favorite_border'}</span> ${p.likes ? p.likes.length : 0}
+                    </button>
+                    <button class="action-btn" onclick="openComments('${doc.id}', '${p.uid}')">
+                        <span class="material-icons-round">chat_bubble_outline</span> ${p.commentsCount || 0}
+                    </button>
+                </div>
+            </div>`;
+      });
+      feed.innerHTML = html;
+  });
 
-  document.getElementById('postBtn').onclick = async () => {
-    const text = document.getElementById('postInput').value;
-    const file = document.getElementById('postImageUpload').files[0];
-    if (!text.trim() && !file) return;
-
-    let imageUrl = "";
-    if (file) {
-      try {
-        const sRef = ref(storage, `posts/${Date.now()}`);
-        await uploadBytes(sRef, file);
-        imageUrl = await getDownloadURL(sRef);
-      } catch (e) { console.log("Storage limit"); }
-    }
-    
-    await addDoc(collection(db, "posts"), { 
-        content: text, user: currentUsername, userPhoto: currentProfilePic, 
-        postImage: imageUrl, uid: currentUser.uid, timestamp: serverTimestamp() 
-    });
-    document.getElementById('postInput').value = "";
-    document.getElementById('postImageUpload').value = "";
-    document.getElementById('imagePreviewContainer').classList.add('hidden');
-  };
-
-  document.getElementById('postImageUpload').onchange = (e) => {
-      if(e.target.files[0]) {
-        document.getElementById('postImagePreview').src = URL.createObjectURL(e.target.files[0]);
-        document.getElementById('imagePreviewContainer').classList.remove('hidden');
+  // --- LIKES & NOTIFS ---
+  window.toggleLike = async (postId, isLiked, ownerId) => {
+      if(!currentUser) return login();
+      const ref = doc(db, "posts", postId);
+      if(isLiked) {
+          await updateDoc(ref, { likes: arrayRemove(currentUser.uid) });
+      } else {
+          await updateDoc(ref, { likes: arrayUnion(currentUser.uid) });
+          if(ownerId !== currentUser.uid) sendNotif(ownerId, 'like', postId);
       }
   };
+
+  async function sendNotif(toUid, type, postId) {
+      await addDoc(collection(db, "notifications"), {
+          toUid, fromUid: currentUser.uid, fromName: currentUser.displayName,
+          type, postId, read: false, timestamp: serverTimestamp()
+      });
+  }
+
+  // --- COMMENTS SYSTEM ---
+  window.openComments = (postId, postOwnerId) => {
+      document.getElementById('commentModal').style.display = 'flex';
+      
+      const q = query(collection(db, `posts/${postId}/comments`), orderBy("timestamp", "asc"));
+      onSnapshot(q, (snap) => {
+          let html = "";
+          snap.forEach(d => {
+              const c = d.data();
+              html += `<div class="comment-item">
+                <img src="${c.photo}" class="comment-avatar">
+                <div style="background:#f0f2f5; padding:8px 12px; border-radius:15px; width:100%;">
+                    <b>${c.user}</b> <br> ${c.text}
+                </div>
+              </div>`;
+          });
+          document.getElementById('commentList').innerHTML = html;
+      });
+  
+      const oldBtn = document.getElementById('sendCommentBtn');
+      const newBtn = oldBtn.cloneNode(true);
+      oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+
+      newBtn.onclick = async () => {
+          const txt = document.getElementById('commentInput').value;
+          if(!txt.trim()) return;
+          await addDoc(collection(db, `posts/${postId}/comments`), {
+              text: txt, user: currentUser.displayName, photo: currentUser.photoURL, timestamp: serverTimestamp()
+          });
+          const postRef = doc(db, "posts", postId);
+          const postSnap = await getDoc(postRef);
+          await updateDoc(postRef, { commentsCount: (postSnap.data().commentsCount || 0) + 1 });
+          
+          if(postOwnerId !== currentUser.uid) sendNotif(postOwnerId, 'comment', postId);
+          document.getElementById('commentInput').value = "";
+      };
+  };
+
+  // --- NOTIFICATIONS & RED DOT ---
+  function listenToNotifications(uid) {
+      const q = query(collection(db, "notifications"), where("toUid", "==", uid), orderBy("timestamp", "desc"));
+      onSnapshot(q, (snap) => {
+          let html = "";
+          let unreadCount = 0;
+          snap.forEach(d => {
+              const n = d.data();
+              if(!n.read) unreadCount++;
+              html += `
+                <div class="notif-item ${n.read ? '' : 'unread'}">
+                    <span class="material-icons-round" style="color:var(--primary)">${n.type == 'like' ? 'favorite' : 'chat'}</span>
+                    <div>
+                        <b>${n.fromName}</b> ${n.type == 'like' ? 'liked your buzz' : 'commented on your buzz'}.
+                        <small style="display:block; color:#888;">${n.timestamp ? new Date(n.timestamp.toDate()).toLocaleTimeString() : ''}</small>
+                    </div>
+                </div>`;
+          });
+          document.getElementById('notif-list').innerHTML = html;
+          
+          const badge = document.getElementById('notif-badge');
+          if(unreadCount > 0) badge.classList.add('visible');
+          else badge.classList.remove('visible');
+      });
+  }
+
+  window.markAllRead = async () => {
+      if(!currentUser) return;
+      const q = query(collection(db, "notifications"), where("toUid", "==", currentUser.uid), where("read", "==", false));
+      const snap = await getDocs(q);
+      snap.forEach(d => updateDoc(doc(db, "notifications", d.id), { read: true }));
+  };
+
+  // --- PROFILE & FOLLOW ---
+  window.viewUserProfile = (uid) => { loadProfile(uid); switchView('profile'); };
+
+  async function loadProfile(targetUid) {
+      const container = document.getElementById('profile-content');
+      const userSnap = await getDoc(doc(db, "users", targetUid));
+      if(!userSnap.exists()) return;
+      const u = userSnap.data();
+      
+      let isFollowing = false;
+      let followerCount = 0;
+      
+      const followersSnap = await getDocs(collection(db, `users/${targetUid}/followers`));
+      followerCount = followersSnap.size;
+      
+      if(currentUser) {
+          const followSnap = await getDoc(doc(db, `users/${targetUid}/followers`, currentUser.uid));
+          isFollowing = followSnap.exists();
+      }
+
+      const isMe = currentUser && currentUser.uid === targetUid;
+
+      container.innerHTML = `
+        <div class="profile-header">
+            <img src="${u.photoURL}" class="profile-pic-lg">
+            <h2>${u.displayName}</h2>
+            <div class="stats">
+                <div><b>${followerCount}</b><br><small>Followers</small></div>
+            </div>
+            ${isMe ? 
+                `<button class="btn-follow" style="background:#ff4444;" onclick="doLogout()">Logout</button>` : 
+                `<button class="btn-follow ${isFollowing ? 'following' : ''}" onclick="toggleFollow('${targetUid}', ${isFollowing})">
+                    ${isFollowing ? 'Following' : 'Follow'}
+                </button>`
+            }
+        </div>
+      `;
+  }
+
+  window.toggleFollow = async (targetUid, isFollowing) => {
+      if(!currentUser) return login();
+      const ref = doc(db, `users/${targetUid}/followers`, currentUser.uid);
+      if(isFollowing) {
+          await deleteDoc(ref);
+      } else {
+          await setDoc(ref, { timestamp: serverTimestamp() });
+          sendNotif(targetUid, 'follow', null);
+      }
+      loadProfile(targetUid);
+  };
+
+  window.doLogout = () => signOut(auth).then(() => window.location.reload());
 </script>
 </body>
 </html>
