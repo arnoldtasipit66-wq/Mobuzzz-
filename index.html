@@ -4,37 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Mobuzzz Pro</title>
+    
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FFD700">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default"> 
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     
     <style>
-        :root { --primary: #FFD700; --bg: #f8f9fa; --text: #212529; --gray: #6c757d; --white: #ffffff; --blue: #0099ff; }
+        /* COLOR PALETTE */
+        :root { 
+            --primary: #FFD700; /* YELLOW */
+            --bg: #FFD700;      /* YELLOW BACKGROUND */
+            --card-bg: #ffffff; 
+            --text: #212529; 
+            --gray: #6c757d; 
+            --blue: #0099ff; 
+        }
         
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            background: var(--bg); color: var(--text); margin: 0; padding: 0; 
-            padding-bottom: calc(75px + env(safe-area-inset-bottom)); 
-            overscroll-behavior-y: none; user-select: none; -webkit-user-select: none;
+            background: var(--bg); 
+            color: var(--text); 
+            margin: 0; padding: 0; 
+            padding-bottom: calc(80px + env(safe-area-inset-bottom)); 
+            overscroll-behavior-y: none; 
+            -webkit-tap-highlight-color: transparent;
         }
         
         /* HEADER */
         header { 
-            background: var(--white); padding: 15px; position: sticky; top: 0; z-index: 100; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; 
+            background: var(--card-bg); 
+            padding: 15px; 
             padding-top: calc(15px + env(safe-area-inset-top));
+            position: sticky; top: 0; z-index: 100; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            display: flex; justify-content: space-between; align-items: center; 
         }
-        h1 { margin: 0; font-size: 20px; font-weight: 800; color: #000; letter-spacing: -0.5px; }
+        h1 { margin: 0; font-size: 22px; font-weight: 900; color: #000; letter-spacing: -1px; }
         .brand span { color: #f39c12; }
         
-        .container { max-width: 600px; margin: 0 auto; padding: 15px; }
+        .container { max-width: 600px; margin: 0 auto; padding: 10px; }
         .view-section { display: none; animation: fadeIn 0.2s ease-out; }
         .view-section.active { display: block; }
 
         /* POST FEED */
-        .post-card { background: var(--white); border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid #eee; }
+        .post-card { 
+            background: var(--card-bg); 
+            border-radius: 16px; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            border: none;
+        }
         .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); cursor: pointer; }
         .user-meta { flex: 1; }
@@ -47,57 +70,76 @@
         .action-btn.liked { color: #e91e63; }
 
         /* NOTIFICATIONS */
-        .notif-item { background: white; padding: 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s; }
-        .notif-item:active { background: #f0f0f0; }
-        .notif-item.unread { background: #fffde7; border-left: 4px solid var(--primary); }
-        .red-dot { width: 10px; height: 10px; background: #ff4444; border-radius: 50%; position: absolute; top: 5px; right: 25%; border: 2px solid white; display: none; }
-        .red-dot.visible { display: block; }
+        .notif-item { 
+            background: white; 
+            padding: 15px; 
+            margin-bottom: 5px; 
+            border-radius: 10px;
+            display: flex; align-items: center; gap: 10px; 
+            cursor: pointer; 
+        }
+        .notif-item.unread { background: #fffde7; border-left: 5px solid #ff4444; }
 
-        /* CHAT & MESSAGES */
-        .chat-list-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: white; border-bottom: 1px solid #eee; cursor: pointer; }
-        .chat-list-item:hover { background: #f9f9f9; }
-        .chat-bubble { max-width: 70%; padding: 10px 15px; border-radius: 18px; margin-bottom: 5px; font-size: 14px; line-height: 1.4; position: relative; word-wrap: break-word; }
-        .chat-bubble.me { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .chat-bubble.them { background: #e4e6eb; color: black; align-self: flex-start; border-bottom-left-radius: 4px; }
-        .chat-container { display: flex; flex-direction: column; height: calc(100vh - 140px); overflow-y: auto; padding: 10px; gap: 5px; }
-        .chat-input-area { position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 10px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; gap: 10px; align-items: center; padding-bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 2000; }
+        /* CHAT */
+        .chat-list-item { background: white; padding: 15px; border-radius: 12px; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .chat-container { height: calc(100vh - 160px); overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .chat-bubble { max-width: 75%; padding: 10px 15px; border-radius: 20px; font-size: 14px; line-height: 1.4; }
+        .chat-bubble.me { align-self: flex-end; background: var(--blue); color: white; border-bottom-right-radius: 4px; }
+        .chat-bubble.them { align-self: flex-start; background: white; color: black; border-bottom-left-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .chat-input-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 10px; display: flex; gap: 10px; align-items: center; padding-bottom: calc(10px + env(safe-area-inset-bottom)); box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 2002; }
 
-        /* GAME MODE */
-        body.game-mode { background: #000; padding: 0 !important; overflow: hidden; }
+        /* GAME MODE (IMMERSIVE) */
+        body.game-mode { background: #000; overflow: hidden; padding: 0 !important; }
         body.game-mode header, body.game-mode .bottom-nav, body.game-mode .fab, body.game-mode .container { display: none !important; }
-        .game-wrapper { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 5000; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        .game-frame { width: 100vh; height: 100vw; transform: rotate(90deg); transform-origin: center; border: none; position: absolute; }
-        .game-exit-btn { position: fixed; top: 20px; right: 90px; background: rgba(255, 68, 68, 0.9); color: white; border: 2px solid white; width: 40px; height: 40px; border-radius: 50%; z-index: 6000; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.5); transform: rotate(90deg); }
-        .rotate-hint { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 5002; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; pointer-events: none; transition: opacity 0.5s ease; }
+        
+        .game-wrapper { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 5000; display: flex; justify-content: center; align-items: center; }
+        .game-frame { width: 100vh; height: 100vw; transform: rotate(90deg); border: none; }
+        
+        /* EXIT BUTTON (FIXED Z-INDEX) */
+        .game-exit-btn { 
+            position: fixed; top: 20px; right: 90px; 
+            width: 45px; height: 45px; border-radius: 50%; 
+            background: rgba(255, 0, 0, 0.9); color: white; border: 2px solid white; 
+            z-index: 9999; /* PINAKA-IBABAW */
+            display: flex; align-items: center; justify-content: center; 
+            transform: rotate(90deg); cursor: pointer;
+        }
+
+        /* LOADING CURTAIN */
+        #loadingCurtain {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 6000; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: white; pointer-events: none; transition: opacity 0.5s ease;
+        }
         .rotate-content { transform: rotate(90deg); text-align: center; }
 
-        /* BOTTOM NAV */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--white); display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000; border-top: 1px solid #eee; padding-bottom: env(safe-area-inset-bottom); }
-        .nav-item { border: none; background: none; color: var(--gray); display: flex; flex-direction: column; align-items: center; font-size: 10px; gap: 4px; cursor: pointer; width: 20%; }
-        .nav-item.active { color: #000; font-weight: bold; }
-        .nav-item .material-icons-round { font-size: 26px; }
+        /* EXIT MODAL */
+        .exit-confirm-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center; }
+        .exit-box { background: white; padding: 25px; border-radius: 20px; text-align: center; width: 300px; transform: rotate(90deg); border: 4px solid var(--primary); }
+        .exit-actions { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+
+        /* NAVIGATION */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; padding-bottom: env(safe-area-inset-bottom); border-top-left-radius: 20px; border-top-right-radius: 20px; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); }
+        .nav-item { border: none; background: none; color: var(--gray); display: flex; flex-direction: column; align-items: center; gap: 4px; width: 20%; cursor: pointer; }
+        .nav-item.active { color: #000; }
+        .nav-item .material-icons-round { font-size: 28px; }
 
         /* FAB */
-        .fab { position: fixed; bottom: calc(75px + env(safe-area-inset-bottom)); right: 20px; background: var(--primary); color: #000; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4); cursor: pointer; z-index: 900; border: none; font-weight: bold; }
+        .fab { position: fixed; bottom: calc(85px + env(safe-area-inset-bottom)); right: 20px; background: black; color: var(--primary); width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 2px solid var(--primary); z-index: 900; cursor: pointer; }
+
+        /* PROFILE */
+        .profile-header { text-align: center; padding: 30px; background: white; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .profile-pic-lg { width: 90px; height: 90px; border-radius: 50%; border: 4px solid var(--primary); object-fit: cover; margin-bottom: 10px; }
+        .btn-group { display: flex; justify-content: center; gap: 10px; margin-top: 15px; }
+        .btn-profile { padding: 8px 20px; border-radius: 20px; font-weight: bold; border: none; cursor: pointer; }
+        .btn-logout { background: #ff4444; color: white; }
+        .btn-follow { background: black; color: white; }
+        .btn-message { background: var(--blue); color: white; }
 
         /* MODALS */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: flex-end; }
-        .modal-content { background: white; width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); animation: slideUp 0.3s ease; max-height: 80vh; overflow-y: auto; display: flex; flex-direction: column; }
-        
-        /* COMMENTS */
-        .comment-list { flex: 1; overflow-y: auto; margin-bottom: 10px; max-height: 40vh; }
-        .comment-item { display: flex; gap: 10px; margin-bottom: 10px; font-size: 14px; }
-        .comment-item.reply { margin-left: 40px; border-left: 2px solid #eee; padding-left: 10px; }
-        .comment-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
-        .reply-tag { font-size: 11px; background: #eee; padding: 2px 6px; border-radius: 4px; margin-right: 5px; color: #555; }
-
-        /* PROFILE */
-        .profile-header { text-align: center; padding: 30px 20px; background: white; border-radius: 0 0 20px 20px; margin-bottom: 15px; }
-        .profile-pic-lg { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 10px; object-fit: cover; }
-        .stats { display: flex; justify-content: center; gap: 20px; margin: 15px 0; }
-        .btn-follow { background: #000; color: #fff; border: none; padding: 8px 24px; border-radius: 20px; font-weight: bold; cursor: pointer; }
-        .btn-follow.following { background: white; color: #000; border: 1px solid #ddd; }
-        .btn-msg { background: var(--blue); color: white; border: none; padding: 8px 24px; border-radius: 20px; font-weight: bold; cursor: pointer; margin-left: 5px; }
+        .modal-content { background: white; width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); animation: slideUp 0.3s ease; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -113,24 +155,26 @@
 <button class="game-exit-btn" id="gameExitBtn" onclick="showExitConfirm()" style="display:none;">
     <span class="material-icons-round">close</span>
 </button>
-<div id="exitConfirmModal" class="exit-confirm-modal" style="display:none;">
+
+<div id="exitConfirmModal" class="exit-confirm-modal">
     <div class="exit-box">
         <span class="material-icons-round" style="font-size:48px; color:#d32f2f;">warning</span>
         <h3>Exit Game?</h3>
-        <p>Are you sure you want to close Pinoy Pool?</p>
+        <p>Your game progress will be lost.</p>
         <div class="exit-actions">
-            <button class="btn-stay" onclick="closeExitConfirm()">Cancel</button>
-            <button class="btn-leave" onclick="confirmExitGame()">Yes, Exit</button>
+            <button class="btn-profile" style="background:#eee; color:black;" onclick="closeExitConfirm()">Cancel</button>
+            <button class="btn-profile btn-logout" onclick="confirmExitGame()">Exit</button>
         </div>
     </div>
 </div>
+
 <div id="view-games" class="view-section">
     <div class="game-wrapper">
-        <div id="loadingCurtain" class="rotate-hint">
+        <div id="loadingCurtain">
             <div class="rotate-content">
                 <span class="material-icons-round" style="font-size:48px; display:block; margin-bottom:10px;">screen_rotation</span> 
-                <h2>Loading Game...</h2>
-                <p>Rotate Phone</p>
+                <h2>Loading...</h2>
+                <p>Please rotate your phone</p>
             </div>
         </div>
         <iframe src="https://arnoldtasipit66-wq.github.io/my-game-assets/" class="game-frame" title="Pinoy Pool"></iframe>
@@ -143,18 +187,18 @@
     </div>
 
     <div id="view-messages" class="view-section">
-        <h2 style="padding: 0 10px;">Messages</h2>
+        <h2 style="padding:0 10px; color:black;">Inbox</h2>
         <div id="inbox-list">
-            <p style="text-align:center; margin-top:50px; color:#888;">No conversations yet.</p>
+            <p style="text-align:center; margin-top:50px; color:#555;">No conversations yet.</p>
         </div>
     </div>
 
     <div id="view-notifications" class="view-section">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3 style="margin:0;">Notifications</h3>
-            <button onclick="markAllRead()" style="background:none; border:none; color:var(--primary); font-weight:bold; cursor:pointer;">Mark read</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="margin:0; color:black;">Notifications</h3>
+            <button onclick="markAllRead()" style="background:none; border:none; font-weight:bold; cursor:pointer;">Mark read</button>
         </div>
-        <div id="notif-list"><p style="text-align:center;">No updates.</p></div>
+        <div id="notif-list"><p style="text-align:center; color:#555;">No updates.</p></div>
     </div>
 
     <div id="view-profile" class="view-section">
@@ -162,15 +206,15 @@
     </div>
 </div>
 
-<div id="view-conversation" class="view-section" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:2000; display:none;">
-    <div style="background:white; padding:15px; border-bottom:1px solid #eee; display:flex; align-items:center; gap:10px; padding-top:calc(15px + env(safe-area-inset-top));">
+<div id="view-conversation" class="view-section" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#f0f2f5; z-index:3000; display:none;">
+    <div style="background:white; padding:15px; padding-top:calc(15px + env(safe-area-inset-top)); display:flex; align-items:center; gap:10px; border-bottom:1px solid #ddd;">
         <button onclick="closeChat()" style="background:none; border:none;"><span class="material-icons-round">arrow_back</span></button>
-        <img id="chat-header-avatar" src="" style="width:30px; height:30px; border-radius:50%;">
+        <img id="chat-header-avatar" src="" style="width:35px; height:35px; border-radius:50%;">
         <b id="chat-header-name">User</b>
     </div>
     <div id="chat-messages" class="chat-container"></div>
-    <div class="chat-input-area">
-        <input type="text" id="messageInput" placeholder="Type a message..." style="flex:1; padding:10px; border-radius:20px; border:1px solid #ddd; outline:none;">
+    <div class="chat-input-bar">
+        <input type="text" id="messageInput" placeholder="Type a message..." style="flex:1; padding:12px; border-radius:20px; border:1px solid #ddd; outline:none;">
         <button onclick="sendMessage()" style="background:var(--blue); color:white; border:none; padding:10px; border-radius:50%; display:flex;"><span class="material-icons-round">send</span></button>
     </div>
 </div>
@@ -190,23 +234,22 @@
 <div id="postModal" class="modal" onclick="closeModal(event, 'postModal')">
     <div class="modal-content" onclick="event.stopPropagation()">
         <h3>Create Buzz</h3>
-        <textarea id="postInput" placeholder="What's buzzing?" style="width:100%; height:100px; border:1px solid #ddd; padding:10px; border-radius:10px; box-sizing:border-box;"></textarea>
+        <textarea id="postInput" placeholder="What's on your mind?" style="width:100%; height:100px; border:1px solid #ddd; padding:10px; border-radius:10px;"></textarea>
         <div style="text-align:right; margin-top:10px;">
             <button onclick="document.getElementById('postModal').style.display='none'" style="margin-right:10px; background:none; border:none;">Cancel</button>
-            <button id="submitPostBtn" style="background:var(--primary); border:none; padding:8px 20px; border-radius:20px; font-weight:bold;">Post</button>
+            <button id="submitPostBtn" style="background:black; color:var(--primary); border:none; padding:8px 20px; border-radius:20px; font-weight:bold;">Post</button>
         </div>
     </div>
 </div>
 
 <div id="commentModal" class="modal" onclick="closeModal(event, 'commentModal')">
     <div class="modal-content" style="height: 60vh;" onclick="event.stopPropagation()">
-        <div style="width:40px; height:4px; background:#eee; border-radius:2px; margin:0 auto 15px auto;"></div>
         <h3 style="margin-top:0;">Comments</h3>
         <div id="commentList" class="comment-list"></div>
-        <div id="replyingToBanner" style="font-size:12px; color:var(--blue); padding:5px 0; display:none;">Replying to... <span onclick="cancelReply()" style="float:right; cursor:pointer;">&times;</span></div>
+        <div id="replyBanner" style="font-size:12px; color:var(--blue); display:none; padding:5px;">Replying... <span onclick="cancelReply()" style="float:right; cursor:pointer;">&times;</span></div>
         <div style="display:flex; gap:10px; margin-top:auto;">
             <input type="text" id="commentInput" placeholder="Write a comment..." style="flex:1; padding:10px; border-radius:20px; border:1px solid #ddd; outline:none;">
-            <button id="sendCommentBtn" style="background:var(--primary); border:none; border-radius:50%; width:40px; height:40px; font-weight:bold; cursor:pointer;">➤</button>
+            <button id="sendCommentBtn" style="background:var(--primary); border:none; border-radius:50%; width:40px; height:40px; font-weight:bold;">➤</button>
         </div>
     </div>
 </div>
@@ -228,33 +271,33 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const auth = getAuth(app);
-  
-  try { enableIndexedDbPersistence(db).catch(err => console.log("Persistence error:", err.code)); } catch(e) {}
+  try { enableIndexedDbPersistence(db).catch(e => console.log(e.code)); } catch(e) {}
 
   let currentUser = null;
   let activeChatId = null;
   let activePostId = null;
-  let replyingToCommentId = null; // Para sa reply logic
+  let replyToId = null;
 
-  // --- NAVIGATION ---
+  // --- NAVIGATION & GAME ---
   window.switchView = (viewName) => {
-    // Hide specialized views first
     document.getElementById('view-conversation').style.display = 'none';
     document.getElementById('mainNav').style.display = 'flex';
     document.getElementById('mainHeader').style.display = 'flex';
-
+    
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    
+
     if(viewName === 'games') {
         document.body.classList.add('game-mode');
         document.getElementById('view-games').classList.add('active');
-        document.getElementById('gameExitBtn').style.display = 'flex';
+        document.getElementById('gameExitBtn').style.display = 'flex'; // BUTTON X FIX
         document.querySelectorAll('.nav-item')[1].classList.add('active');
+        
+        // CURTAIN LOGIC
         const curtain = document.getElementById('loadingCurtain');
         if(curtain) {
             curtain.style.display = 'flex'; curtain.style.opacity = '1';
-            setTimeout(() => { curtain.style.opacity = '0'; setTimeout(() => curtain.style.display = 'none', 500); }, 4500);
+            setTimeout(() => { curtain.style.opacity = '0'; setTimeout(() => curtain.style.display = 'none', 500); }, 4000);
         }
         return; 
     } else {
@@ -264,20 +307,21 @@
     }
 
     document.getElementById(`view-${viewName}`).classList.add('active');
-    const index = ['home', 'games', 'messages', 'notifications', 'profile'].indexOf(viewName);
-    if(index >= 0) document.querySelectorAll('.nav-item')[index].classList.add('active');
+    
+    // Highlight Nav
+    const idx = ['home', 'games', 'messages', 'notifications', 'profile'].indexOf(viewName);
+    if(idx >= 0) document.querySelectorAll('.nav-item')[idx].classList.add('active');
 
     if(viewName === 'profile' && currentUser) loadProfile(currentUser.uid);
     if(viewName === 'messages' && currentUser) loadInbox();
   };
 
-  window.closeModal = (event, id) => {
-      if(event.target.id === id) document.getElementById(id).style.display = 'none';
-  };
   window.showExitConfirm = () => document.getElementById('exitConfirmModal').style.display = 'flex';
   window.closeExitConfirm = () => document.getElementById('exitConfirmModal').style.display = 'none';
   window.confirmExitGame = () => { window.closeExitConfirm(); window.switchView('home'); };
+  window.closeModal = (e, id) => { if(e.target.id === id) document.getElementById(id).style.display = 'none'; };
 
+  // --- AUTH ---
   document.getElementById('fabPost').onclick = () => currentUser ? document.getElementById('postModal').style.display = 'flex' : login();
   const login = () => signInWithPopup(auth, new GoogleAuthProvider());
   window.doLogout = () => signOut(auth).then(() => window.location.reload());
@@ -286,12 +330,12 @@
     currentUser = user;
     const container = document.getElementById('authBtnContainer');
     if (user) {
-      container.innerHTML = `<img src="${user.photoURL}" style="width:32px; height:32px; border-radius:50%; border:2px solid #ddd;" onclick="switchView('profile')">`;
+      container.innerHTML = `<img src="${user.photoURL}" style="width:32px; height:32px; border-radius:50%; border:2px solid black;" onclick="switchView('profile')">`;
       await setDoc(doc(db, "users", user.uid), { displayName: user.displayName, photoURL: user.photoURL, email: user.email }, { merge: true });
       listenToNotifications(user.uid);
     } else {
-      container.innerHTML = `<button onclick="login()" style="background:#000; color:white; border:none; padding:8px 15px; border-radius:15px; font-weight:bold;">Login</button>`;
-      window.login = login; 
+      container.innerHTML = `<button onclick="login()" style="background:black; color:var(--primary); border:none; padding:8px 15px; border-radius:15px; font-weight:bold;">Login</button>`;
+      window.login = login;
     }
   });
 
@@ -338,211 +382,114 @@
       feed.innerHTML = html;
   });
 
-  // --- LIKES & NOTIFS ---
   window.toggleLike = async (postId, isLiked, ownerId) => {
       if(!currentUser) return login();
       const ref = doc(db, "posts", postId);
-      if(isLiked) {
-          await updateDoc(ref, { likes: arrayRemove(currentUser.uid) });
-      } else {
+      if(isLiked) await updateDoc(ref, { likes: arrayRemove(currentUser.uid) });
+      else {
           await updateDoc(ref, { likes: arrayUnion(currentUser.uid) });
-          if(ownerId !== currentUser.uid) sendNotif(ownerId, 'like', postId, null);
+          if(ownerId !== currentUser.uid) sendNotif(ownerId, 'like', postId);
       }
   };
 
-  async function sendNotif(toUid, type, postId, extraData) {
+  async function sendNotif(toUid, type, postId, extra) {
       await addDoc(collection(db, "notifications"), {
           toUid, fromUid: currentUser.uid, fromName: currentUser.displayName,
-          type, postId, read: false, timestamp: serverTimestamp(), ...extraData
+          type, postId, read: false, timestamp: serverTimestamp(), ...extra
       });
   }
 
-  // --- REPLY & COMMENTS SYSTEM ---
+  // --- COMMENTS & REPLY ---
   window.cancelReply = () => {
-      replyingToCommentId = null;
-      document.getElementById('replyingToBanner').style.display = 'none';
+      replyToId = null;
+      document.getElementById('replyBanner').style.display = 'none';
       document.getElementById('commentInput').placeholder = "Write a comment...";
   };
 
-  window.setReply = (commentId, authorName) => {
-      replyingToCommentId = commentId;
-      document.getElementById('replyingToBanner').style.display = 'block';
-      document.getElementById('replyingToBanner').innerHTML = `Replying to <b>${authorName}</b> <span onclick="cancelReply()" style="float:right; cursor:pointer;">&times;</span>`;
+  window.initReply = (id, name) => {
+      replyToId = id;
+      document.getElementById('replyBanner').innerHTML = `Replying to <b>${name}</b> <span onclick="cancelReply()" style="float:right; cursor:pointer;">&times;</span>`;
+      document.getElementById('replyBanner').style.display = 'block';
       document.getElementById('commentInput').focus();
   };
 
   window.openComments = (postId, postOwnerId) => {
       activePostId = postId;
-      cancelReply(); // Reset logic
+      cancelReply();
       document.getElementById('commentModal').style.display = 'flex';
       
       const q = query(collection(db, `posts/${postId}/comments`), orderBy("timestamp", "asc"));
       onSnapshot(q, (snap) => {
           const list = document.getElementById('commentList');
           list.innerHTML = "";
-          
           let comments = [];
-          snap.forEach(d => comments.push({ id: d.id, ...d.data() }));
-
-          // Render: Simple Indentation for Replies
+          snap.forEach(d => comments.push({id: d.id, ...d.data()}));
+          
           comments.forEach(c => {
-              const isReply = c.replyToId ? 'reply' : '';
-              const replyTag = c.replyToName ? `<span class="reply-tag">@${c.replyToName}</span>` : '';
-              
+              const isReply = c.replyToId ? 'margin-left:40px; border-left:2px solid #ddd;' : '';
               list.innerHTML += `
-              <div class="comment-item ${isReply}">
+              <div class="comment-item" style="${isReply}">
                 <img src="${c.photo}" class="comment-avatar">
                 <div style="width:100%">
-                    <div style="background:#f0f2f5; padding:8px 12px; border-radius:15px; width:fit-content; max-width:100%;">
-                        <b>${c.user}</b><br>${replyTag}${c.text}
+                    <div style="background:#f0f2f5; padding:8px 12px; border-radius:15px; width:fit-content;">
+                        <b>${c.user}</b><br>${c.text}
                     </div>
-                    <div style="margin-top:2px;">
-                        <button onclick="setReply('${c.id}', '${c.user}')" style="background:none; border:none; color:#555; font-size:12px; font-weight:bold; cursor:pointer; padding:0 5px;">Reply</button>
+                    <div style="font-size:12px; margin-top:2px;">
+                        <span onclick="initReply('${c.id}', '${c.user}')" style="cursor:pointer; color:#555; font-weight:bold;">Reply</span>
                     </div>
                 </div>
               </div>`;
           });
       });
-  
-      // Update Send Button Logic
-      const sendBtn = document.getElementById('sendCommentBtn');
-      sendBtn.onclick = async () => {
+
+      const btn = document.getElementById('sendCommentBtn');
+      btn.onclick = async () => {
           const txt = document.getElementById('commentInput').value;
           if(!txt.trim()) return;
           
-          let commentData = {
-              text: txt, user: currentUser.displayName, photo: currentUser.photoURL, timestamp: serverTimestamp()
-          };
-
-          if(replyingToCommentId) {
-              // Get parent comment data to allow deep nesting visualization if needed
-              // But for now, we just tag it
-              commentData.replyToId = replyingToCommentId;
-              // We could fetch the name from UI or DB, simplifying to just generic reply for speed or pass name in setReply
-              // Let's rely on setReply's visual cue. Ideally we'd store who we are replying to.
-              const banner = document.getElementById('replyingToBanner').innerText;
-              if(banner.includes("Replying to")) {
-                  commentData.replyToName = banner.split("Replying to ")[1].split(" ")[0].trim();
-              }
-          }
-
-          await addDoc(collection(db, `posts/${activePostId}/comments`), commentData);
+          await addDoc(collection(db, `posts/${activePostId}/comments`), {
+              text: txt, user: currentUser.displayName, photo: currentUser.photoURL,
+              timestamp: serverTimestamp(), replyToId: replyToId
+          });
           
-          const postRef = doc(db, "posts", activePostId);
-          const postSnap = await getDoc(postRef);
-          await updateDoc(postRef, { commentsCount: (postSnap.data().commentsCount || 0) + 1 });
-          
-          if(postOwnerId !== currentUser.uid) sendNotif(postOwnerId, 'comment', activePostId, null);
+          await updateDoc(doc(db, "posts", activePostId), { commentsCount: increment(1) });
+          if(postOwnerId !== currentUser.uid) sendNotif(postOwnerId, 'comment', activePostId);
           
           document.getElementById('commentInput').value = "";
           cancelReply();
       };
   };
 
-  // --- NOTIFICATIONS & JUMP TO POST ---
-  function listenToNotifications(uid) {
-      const q = query(collection(db, "notifications"), where("toUid", "==", uid), orderBy("timestamp", "desc"));
-      onSnapshot(q, (snap) => {
-          let html = "";
-          let unreadCount = 0;
-          snap.forEach(d => {
-              const n = d.data();
-              if(!n.read) unreadCount++;
-              
-              let icon = n.type == 'like' ? 'favorite' : (n.type == 'comment' ? 'chat' : 'person');
-              let text = n.type == 'like' ? 'liked your buzz' : (n.type == 'comment' ? 'commented on your buzz' : 'started following you');
-              
-              // Onclick Logic: Go to Post
-              let clickAction = "";
-              if(n.postId) {
-                  clickAction = `onclick="jumpToPost('${n.postId}', '${d.id}')"`;
-              } else if (n.type === 'follow') {
-                   clickAction = `onclick="viewUserProfile('${n.fromUid}'); markReadOne('${d.id}')"`;
-              }
+  // --- MESSAGES ---
+  function getChatId(u1, u2) { return [u1, u2].sort().join("_"); }
 
-              html += `
-                <div class="notif-item ${n.read ? '' : 'unread'}" ${clickAction}>
-                    <span class="material-icons-round" style="color:var(--primary)">${icon}</span>
-                    <div>
-                        <b>${n.fromName}</b> ${text}.
-                        <small style="display:block; color:#888;">${n.timestamp ? new Date(n.timestamp.toDate()).toLocaleTimeString() : ''}</small>
-                    </div>
-                </div>`;
-          });
-          document.getElementById('notif-list').innerHTML = html;
-          
-          const badge = document.getElementById('notif-badge');
-          if(unreadCount > 0) badge.classList.add('visible');
-          else badge.classList.remove('visible');
-      });
-  }
-
-  // --- JUMP LOGIC ---
-  window.jumpToPost = async (postId, notifId) => {
-      // 1. Mark notification read
-      await updateDoc(doc(db, "notifications", notifId), { read: true });
-      
-      // 2. Go to Home
-      switchView('home');
-      
-      // 3. Scroll to post or Open Comment
-      const postEl = document.getElementById(`post-${postId}`);
-      if(postEl) {
-          postEl.scrollIntoView({behavior: "smooth", block: "center"});
-          postEl.style.border = "2px solid var(--primary)";
-          setTimeout(() => postEl.style.border = "1px solid #eee", 2000);
-      } else {
-          // If post not loaded in feed yet (because of limit), simpler to just open comment modal directly?
-          // Since we are loading all posts (bad practice but okay for now), it should be there.
-          // Let's trigger "openComments" since user wants to see the interaction
-          // We need the owner ID. Fetch it.
-          const p = await getDoc(doc(db, "posts", postId));
-          if(p.exists()) {
-             openComments(postId, p.data().uid);
-          }
-      }
-  };
-
-  window.markReadOne = async (id) => updateDoc(doc(db, "notifications", id), { read: true });
-  window.markAllRead = async () => {
-      if(!currentUser) return;
-      const q = query(collection(db, "notifications"), where("toUid", "==", currentUser.uid), where("read", "==", false));
-      const snap = await getDocs(q);
-      snap.forEach(d => updateDoc(doc(db, "notifications", d.id), { read: true }));
-  };
-
-  // --- MESSAGING SYSTEM ---
-  function getChatId(uid1, uid2) { return [uid1, uid2].sort().join("_"); }
-
-  window.startChat = async (targetUid, targetName, targetPhoto) => {
+  window.startChat = async (targetUid, name, photo) => {
       if(!currentUser) return login();
       const chatId = getChatId(currentUser.uid, targetUid);
       
-      // Check/Create Chat Metadata
-      const chatRef = doc(db, "chats", chatId);
-      await setDoc(chatRef, {
+      // Create chat meta if not exists
+      await setDoc(doc(db, "chats", chatId), {
           participants: [currentUser.uid, targetUid],
           users: {
               [currentUser.uid]: { name: currentUser.displayName, photo: currentUser.photoURL },
-              [targetUid]: { name: targetName, photo: targetPhoto }
+              [targetUid]: { name: name, photo: photo }
           },
           lastUpdated: serverTimestamp()
       }, { merge: true });
 
-      openChatWindow(chatId, targetName, targetPhoto);
+      openChatWindow(chatId, name, photo);
   };
 
   window.loadInbox = () => {
       const q = query(collection(db, "chats"), where("participants", "array-contains", currentUser.uid), orderBy("lastUpdated", "desc"));
       onSnapshot(q, (snap) => {
           const list = document.getElementById('inbox-list');
-          let html = "";
-          if(snap.empty) { list.innerHTML = '<p style="text-align:center;margin-top:20px;color:#888">No messages yet.</p>'; return; }
+          if(snap.empty) { list.innerHTML = '<p style="text-align:center;margin-top:20px;color:#555">No messages yet.</p>'; return; }
           
+          let html = "";
           snap.forEach(d => {
               const data = d.data();
-              // Find other user
-              const otherUid = data.participants.find(u => u !== currentUser.uid);
+              const otherUid = data.participants.find(id => id !== currentUser.uid);
               const otherUser = data.users[otherUid];
               
               html += `
@@ -550,7 +497,7 @@
                   <img src="${otherUser.photo}" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
                   <div>
                       <b style="font-size:16px;">${otherUser.name}</b><br>
-                      <span style="color:#888; font-size:13px;">${data.lastMessage || 'Start conversation'}</span>
+                      <span style="color:#888; font-size:13px;">${data.lastMessage || 'Start a conversation'}</span>
                   </div>
               </div>`;
           });
@@ -561,8 +508,8 @@
   window.openChatWindow = (chatId, name, photo) => {
       activeChatId = chatId;
       document.getElementById('view-conversation').style.display = 'block';
-      document.getElementById('mainNav').style.display = 'none'; // Hide bottom nav
-      document.getElementById('mainHeader').style.display = 'none'; // Hide top header
+      document.getElementById('mainNav').style.display = 'none';
+      document.getElementById('mainHeader').style.display = 'none';
       
       document.getElementById('chat-header-name').innerText = name;
       document.getElementById('chat-header-avatar').src = photo;
@@ -574,7 +521,9 @@
           snap.forEach(d => {
               const msg = d.data();
               const type = msg.senderId === currentUser.uid ? 'me' : 'them';
-              html += `<div class="chat-bubble ${type}">${msg.text}</div>`;
+              html += `<div style="display:flex; width:100%; justify-content:${type === 'me' ? 'flex-end' : 'flex-start'}">
+                        <div class="chat-bubble ${type}">${msg.text}</div>
+                       </div>`;
           });
           area.innerHTML = html;
           area.scrollTop = area.scrollHeight;
@@ -591,7 +540,6 @@
   window.sendMessage = async () => {
       const txt = document.getElementById('messageInput').value;
       if(!txt.trim() || !activeChatId) return;
-      
       document.getElementById('messageInput').value = "";
       
       await addDoc(collection(db, `chats/${activeChatId}/messages`), {
@@ -602,24 +550,72 @@
       });
   };
 
-  // --- PROFILE LOGIC ---
+  // --- NOTIFICATIONS & JUMP ---
+  function listenToNotifications(uid) {
+      const q = query(collection(db, "notifications"), where("toUid", "==", uid), orderBy("timestamp", "desc"));
+      onSnapshot(q, (snap) => {
+          let html = "";
+          let unread = 0;
+          snap.forEach(d => {
+              const n = d.data();
+              if(!n.read) unread++;
+              const icon = n.type === 'like' ? 'favorite' : (n.type === 'comment' ? 'chat' : 'person');
+              const action = n.postId ? `onclick="jumpToPost('${n.postId}', '${d.id}')"` : `onclick="viewUserProfile('${n.fromUid}')"`;
+
+              html += `
+                <div class="notif-item ${n.read ? '' : 'unread'}" ${action}>
+                    <span class="material-icons-round" style="color:var(--primary)">${icon}</span>
+                    <div>
+                        <b>${n.fromName}</b> ${n.type}ed.
+                    </div>
+                </div>`;
+          });
+          document.getElementById('notif-list').innerHTML = html;
+          document.getElementById('notif-badge').classList.toggle('visible', unread > 0);
+      });
+  }
+
+  window.jumpToPost = async (postId, notifId) => {
+      await updateDoc(doc(db, "notifications", notifId), { read: true });
+      switchView('home');
+      setTimeout(() => {
+          const el = document.getElementById(`post-${postId}`);
+          if(el) el.scrollIntoView({behavior: 'smooth', block: 'center'});
+          openComments(postId, currentUser.uid); // Open discussion directly
+      }, 500);
+  };
+
+  // --- PROFILE ---
   window.viewUserProfile = (uid) => { loadProfile(uid); switchView('profile'); };
 
   async function loadProfile(targetUid) {
       const container = document.getElementById('profile-content');
-      const userSnap = await getDoc(doc(db, "users", targetUid));
-      if(!userSnap.exists()) return;
-      const u = userSnap.data();
+      const uSnap = await getDoc(doc(db, "users", targetUid));
+      if(!uSnap.exists()) return;
+      const u = uSnap.data();
       
-      let isFollowing = false;
+      const isMe = currentUser && currentUser.uid === targetUid;
       let followerCount = (await getDocs(collection(db, `users/${targetUid}/followers`))).size;
-      
-      if(currentUser) {
-          const followSnap = await getDoc(doc(db, `users/${targetUid}/followers`, currentUser.uid));
-          isFollowing = followSnap.exists();
+      let isFollowing = false;
+      if(!isMe && currentUser) {
+          const fSnap = await getDoc(doc(db, `users/${targetUid}/followers`, currentUser.uid));
+          isFollowing = fSnap.exists();
       }
 
-      const isMe = currentUser && currentUser.uid === targetUid;
+      // SPLIT LOGIC: Logout vs Follow/Message
+      let actionButtons = "";
+      if (isMe) {
+          actionButtons = `<button class="btn-profile btn-logout" onclick="doLogout()">Logout</button>`;
+      } else {
+          actionButtons = `
+            <button class="btn-profile ${isFollowing ? 'btn-following' : 'btn-follow'}" 
+                onclick="toggleFollow('${targetUid}', ${isFollowing})" 
+                style="background:${isFollowing ? 'white' : 'black'}; color:${isFollowing ? 'black' : 'white'}; border:${isFollowing ? '1px solid #ddd' : 'none'}">
+                ${isFollowing ? 'Following' : 'Follow'}
+            </button>
+            <button class="btn-profile btn-message" onclick="startChat('${targetUid}', '${u.displayName}', '${u.photoURL}')">Message</button>
+          `;
+      }
 
       container.innerHTML = `
         <div class="profile-header">
@@ -628,14 +624,8 @@
             <div class="stats">
                 <div><b>${followerCount}</b><br><small>Followers</small></div>
             </div>
-            <div style="display:flex; justify-content:center; margin-top:10px;">
-                ${isMe ? 
-                    `<button class="btn-follow" style="background:#ff4444;" onclick="doLogout()">Logout</button>` : 
-                    `<button class="btn-follow ${isFollowing ? 'following' : ''}" onclick="toggleFollow('${targetUid}', ${isFollowing})">
-                        ${isFollowing ? 'Following' : 'Follow'}
-                    </button>
-                    <button class="btn-msg" onclick="startChat('${targetUid}', '${u.displayName}', '${u.photoURL}')">Message</button>`
-                }
+            <div class="btn-group">
+                ${actionButtons}
             </div>
         </div>
       `;
@@ -644,11 +634,10 @@
   window.toggleFollow = async (targetUid, isFollowing) => {
       if(!currentUser) return login();
       const ref = doc(db, `users/${targetUid}/followers`, currentUser.uid);
-      if(isFollowing) {
-          await deleteDoc(ref);
-      } else {
+      if(isFollowing) await deleteDoc(ref);
+      else {
           await setDoc(ref, { timestamp: serverTimestamp() });
-          sendNotif(targetUid, 'follow', null, null);
+          sendNotif(targetUid, 'follow');
       }
       loadProfile(targetUid);
   };
